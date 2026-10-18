@@ -26,6 +26,7 @@ import { renderSentences } from './screens/sentences.js';
 import { renderDecl } from './screens/decl.js';
 import { renderAnalytics } from './screens/analytics.js';
 import { renderFormReports } from './screens/formreports.js';
+import { renderSisterApps } from './screens/sisterapps.js';
 
 const TABS = ['home', 'path', 'settings'];
 
@@ -91,6 +92,7 @@ const SCREENS = {
   decl: renderDecl,
   analytics: renderAnalytics,
   formreports: renderFormReports,
+  sisterapps: renderSisterApps,
 };
 
 // ---------------------------------------------------------------- нижняя навигация

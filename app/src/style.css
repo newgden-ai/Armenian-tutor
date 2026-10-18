@@ -905,3 +905,7 @@ mark { background: var(--gold-soft); color: inherit; border-radius: 4px; padding
   border: 0; border-radius: 18px; background: var(--surface); box-shadow: var(--shadow); color: var(--fg, inherit); display: grid; place-items: center; }
 .fallback-back .ic { width: 20px; height: 20px; transform: rotate(180deg); }
 .skip-btn { display: block; margin: 10px auto 0; border: 0; background: transparent; color: var(--muted); font-size: 14px; text-decoration: underline; padding: 8px; }
+
+/* администратор: список других приложений */
+.sa-row { gap: 8px; padding: 8px 0; }
+.sa-row + .sa-row { border-top: 1px solid var(--line); }

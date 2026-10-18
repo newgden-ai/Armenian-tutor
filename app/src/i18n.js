@@ -1484,6 +1484,26 @@ Object.assign(en, {
 });
 
 
+// ---------------------------------------------------------------- другие языковые приложения
+Object.assign(ru, {
+  saSection: 'Другие языки', saShort: 'Наши самоучители других языков в Telegram',
+  saSheetText: 'Такие же самоучители для других языков — откроются в Telegram.',
+  saTitle: 'Другие приложения', saAdminShort: 'Кнопка «Другие языки»: названия и боты',
+  saSub: 'Список показывается всем в «Настройках» → «Другие языки». Имя бота — без @, как в ссылке t.me/имя_бота.',
+  saAdd: 'Добавить приложение', saTitlePh: 'Название, например: Узбекский · Oʻzbek tili', saBotPh: 'Имя бота, например: uzbek_tutor_bot',
+  saAddBtn: 'Добавить', saDelete: 'Удалить', saEmpty: 'Список пуст — кнопка «Другие языки» скрыта.',
+  saErrors: { forbidden: 'Только для администраторов.', bad_title: 'Название: от 1 до 60 символов.', bad_bot: 'Имя бота: 5–32 латинские буквы, цифры или _.', bad_list: 'Не больше 20 приложений.', other: 'Не удалось сохранить.' },
+});
+Object.assign(en, {
+  saSection: 'Other languages', saShort: 'Our self-study apps for other languages in Telegram',
+  saSheetText: 'The same kind of course for other languages — opens in Telegram.',
+  saTitle: 'Other apps', saAdminShort: 'The “Other languages” button: names and bots',
+  saSub: 'Shown to everyone in Settings → Other languages. Bot name without @, as in t.me/bot_name.',
+  saAdd: 'Add an app', saTitlePh: 'Name, e.g. Uzbek · Oʻzbek tili', saBotPh: 'Bot name, e.g. uzbek_tutor_bot',
+  saAddBtn: 'Add', saDelete: 'Delete', saEmpty: 'The list is empty — the “Other languages” button is hidden.',
+  saErrors: { forbidden: 'Administrators only.', bad_title: 'Name: 1 to 60 characters.', bad_bot: 'Bot name: 5–32 Latin letters, digits or _.', bad_list: 'No more than 20 apps.', other: 'Could not save.' },
+});
+
 const dict = { ru, uz, hy, en };
 let lang = 'ru';
 

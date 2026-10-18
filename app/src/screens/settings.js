@@ -1,6 +1,6 @@
 import { rpc } from '../api.js';
 import { t, setLang, tierName, formatDate } from '../i18n.js';
-import { h, mount, spinner, haptic, openLink } from '../ui.js';
+import { h, mount, spinner, haptic, openLink, sheet } from '../ui.js';
 import { icon } from '../icons.js';
 import { applyTheme, currentTheme } from '../theme.js';
 import { lockedSheet } from './home.js';
@@ -36,6 +36,7 @@ export async function renderSettings(app, params = {}) {
   const weeklyOn = settings.weekly !== false;
   const colloqFirst = settings.colloquial_first === true;
   const weekGoal = Number(settings.week_goal || 5);
+  const otherApps = (app.info && Array.isArray(app.info.sister_apps)) ? app.info.sister_apps : [];
 
   const save = async (lang, patch) => {
     app.me = await rpc('update_settings', { p_ui_lang: lang, p_settings: patch });
@@ -118,8 +119,25 @@ export async function renderSettings(app, params = {}) {
         h('div', {}, h('b', {}, t('communityTitle')), h('div', { class: 'small muted' }, t('communityText'))),
         icon('chevron', 'ic chev'))] : null,
 
+    otherApps.length ? [
+      h('h2', {}, t('saSection')),
+      h('button', { class: 'card sub-card', type: 'button', onClick: () => { haptic(); sheet(
+        h('h3', {}, t('saSection')),
+        h('p', { class: 'small muted' }, t('saSheetText')),
+        ...otherApps.map((a) => h('button', { class: 'card sub-card', type: 'button', onClick: () => openLink(`https://t.me/${a.bot}`) },
+          h('span', { class: 'tile-icon' }, icon('chat')),
+          h('div', {}, h('b', {}, a.title), h('div', { class: 'small muted' }, `@${a.bot}`)),
+          icon('chevron', 'ic chev')))); } },
+        h('span', { class: 'tile-icon' }, icon('map')),
+        h('div', {}, h('b', {}, t('saSection')), h('div', { class: 'small muted' }, t('saShort'))),
+        icon('chevron', 'ic chev'))] : null,
+
     me.is_admin ? [
       h('h2', {}, t('adminSection')),
+      h('button', { class: 'card sub-card', type: 'button', onClick: () => app.go('sisterapps') },
+        h('span', { class: 'tile-icon gold' }, icon('map')),
+        h('div', {}, h('b', {}, t('saTitle')), h('div', { class: 'small muted' }, t('saAdminShort'))),
+        icon('chevron', 'ic chev')),
       h('button', { class: 'card sub-card', type: 'button', onClick: () => app.go('review') },
         h('span', { class: 'tile-icon gold' }, icon('test')),
         h('div', {}, h('b', {}, t('reviewTitle')), h('div', { class: 'small muted' }, t('reviewShort'))),
