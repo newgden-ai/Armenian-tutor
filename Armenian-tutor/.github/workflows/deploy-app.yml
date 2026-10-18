@@ -1,0 +1,63 @@
+name: Deploy App (приложение на GitHub Pages)
+
+# Собирает приложение из папки app/ и публикует на GitHub Pages.
+# Запускается при изменениях в app/ или вручную (Actions → Run workflow).
+on:
+  push:
+    branches: [main]
+    paths: ['app/**', 'data/images.json', 'scripts/fetch_images.py', '.github/workflows/deploy-app.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: app
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - run: npm install --no-audit --no-fund
+
+      # Иллюстрации к темам курсов: свободные изображения Wikimedia Commons → app/public/img
+      # (при сбое сети сборка продолжается без картинок; список выбранных файлов — в отчёте запуска)
+      - name: Иллюстрации к темам
+        working-directory: .
+        run: python3 scripts/fetch_images.py
+
+      - run: npm run build
+        env:
+          # Публичный ключ Supabase (не секрет). Задаётся в
+          # Settings → Secrets and variables → Actions → вкладка Variables.
+          VITE_SUPABASE_KEY: ${{ vars.SUPABASE_PUBLISHABLE_KEY }}
+          # Адрес проекта, имя бота и адрес аудио — тоже Variables (см. README, «Разовая настройка»)
+          VITE_SUPABASE_URL: https://${{ vars.SUPABASE_PROJECT_REF }}.supabase.co
+          VITE_BOT_USERNAME: ${{ vars.BOT_USERNAME }}
+          VITE_AUDIO_BASE: ${{ vars.AUDIO_BASE }}
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: app/dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

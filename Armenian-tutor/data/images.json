@@ -1,0 +1,741 @@
+{
+ "history": {
+  "1": [
+   {
+    "q": "Areni-1 cave",
+    "must": [
+     "areni"
+    ],
+    "caption_ru": "Пещера Арени-1",
+    "caption_uz": "Արենի-1 քարանձավ",
+    "caption_en": "Areni-1 cave"
+   }
+  ],
+  "2": [
+   {
+    "q": "Lchashen wagon",
+    "must": [
+     "lchashen"
+    ],
+    "caption_ru": "Повозка из Лчашена",
+    "caption_uz": "Լճաշենի սայլը",
+    "caption_en": "Lchashen wagon"
+   },
+   {
+    "q": "Shengavit",
+    "must": [
+     "shengavit"
+    ],
+    "caption_ru": "Поселение Шенгавит",
+    "caption_uz": "Շենգավիթ բնակավայր",
+    "caption_en": "Shengavit settlement"
+   }
+  ],
+  "3": [
+   {
+    "q": "Erebuni fortress",
+    "must": [
+     "erebuni"
+    ],
+    "caption_ru": "Крепость Эребуни",
+    "caption_uz": "Էրեբունի ամրոց",
+    "caption_en": "Erebuni Fortress"
+   }
+  ],
+  "4": [
+   {
+    "q": "Behistun inscription",
+    "must": [
+     "behistun",
+     "bisotun"
+    ],
+    "caption_ru": "Бехистунская надпись",
+    "caption_uz": "Բեհիսթունյան արձանագրություն",
+    "caption_en": "Behistun Inscription"
+   }
+  ],
+  "5": [
+   {
+    "q": "Armavir Armenia ancient",
+    "must": [
+     "armavir"
+    ],
+    "caption_ru": "Древний Армавир",
+    "caption_uz": "Հին Արմավիր",
+    "caption_en": "Ancient Armavir"
+   },
+   {
+    "q": "Artashat Khor Virap",
+    "must": [
+     "khor",
+     "artashat"
+    ],
+    "caption_ru": "Хор Вирап на месте Арташата",
+    "caption_uz": "Խոր Վիրապը Արտաշատի տեղում",
+    "caption_en": "Khor Virap at the site of Artashat"
+   }
+  ],
+  "6": [
+   {
+    "q": "Tigranes the Great coin",
+    "must": [
+     "tigran"
+    ],
+    "caption_ru": "Монета Тиграна Великого",
+    "caption_uz": "Տիգրան Մեծի դրամ",
+    "caption_en": "Coin of Tigranes the Great"
+   }
+  ],
+  "7": [
+   {
+    "q": "Garni temple",
+    "must": [
+     "garni"
+    ],
+    "caption_ru": "Храм Гарни",
+    "caption_uz": "Գառնիի տաճար",
+    "caption_en": "Garni Temple"
+   }
+  ],
+  "8": [
+   {
+    "q": "Etchmiadzin Cathedral",
+    "must": [
+     "etchmiadzin",
+     "echmiadzin"
+    ],
+    "caption_ru": "Эчмиадзинский собор",
+    "caption_uz": "Էջմիածնի Մայր տաճար",
+    "caption_en": "Etchmiadzin Cathedral"
+   }
+  ],
+  "9": [
+   {
+    "q": "Mesrop Mashtots",
+    "must": [
+     "mashtots"
+    ],
+    "caption_ru": "Месроп Маштоц",
+    "caption_uz": "Մեսրոպ Մաշտոց",
+    "caption_en": "Mesrop Mashtots"
+   }
+  ],
+  "10": [
+   {
+    "q": "Vardan Mamikonian",
+    "must": [
+     "vardan",
+     "mamikon"
+    ],
+    "caption_ru": "Вардан Мамиконян",
+    "caption_uz": "Վարդան Մամիկոնյան",
+    "caption_en": "Vardan Mamikonian"
+   },
+   {
+    "q": "Avarayr",
+    "must": [
+     "avarayr"
+    ],
+    "caption_ru": "Аварайрская битва",
+    "caption_uz": "Ավարայրի ճակատամարտ",
+    "caption_en": "Battle of Avarayr"
+   }
+  ],
+  "11": [
+   {
+    "q": "Zvartnots cathedral",
+    "must": [
+     "zvartnots"
+    ],
+    "caption_ru": "Руины собора Звартноц",
+    "caption_uz": "Զվարթնոցի տաճարի ավերակներ",
+    "caption_en": "Ruins of Zvartnots Cathedral"
+   }
+  ],
+  "12": [
+   {
+    "q": "Ani cathedral",
+    "must": [
+     "ani"
+    ],
+    "caption_ru": "Собор в Ани",
+    "caption_uz": "Անիի Մայր տաճար",
+    "caption_en": "Cathedral of Ani"
+   }
+  ],
+  "13": [
+   {
+    "q": "Cilician Armenia fortress",
+    "must": [
+     "cilic",
+     "korykos",
+     "kizkalesi",
+     "sis"
+    ],
+    "caption_ru": "Крепость Киликийского царства",
+    "caption_uz": "Կիլիկյան թագավորության ամրոց",
+    "caption_en": "Fortress of the Cilician kingdom"
+   }
+  ],
+  "14": [
+   {
+    "q": "Tatev monastery",
+    "must": [
+     "tatev"
+    ],
+    "caption_ru": "Монастырь Татев",
+    "caption_uz": "Տաթևի վանք",
+    "caption_en": "Tatev Monastery"
+   }
+  ],
+  "15": [
+   {
+    "q": "Old Yerevan Erivan fortress",
+    "must": [
+     "erivan",
+     "yerevan"
+    ],
+    "caption_ru": "Старый Ереван",
+    "caption_uz": "Հին Երևան",
+    "caption_en": "Old Yerevan"
+   }
+  ],
+  "16": [
+   {
+    "q": "Israel Ori",
+    "must": [
+     "ori"
+    ],
+    "caption_ru": "Исраэл Ори",
+    "caption_uz": "Իսրայել Օրի",
+    "caption_en": "Israel Ori"
+   }
+  ],
+  "17": [
+   {
+    "q": "Khachatur Abovian",
+    "must": [
+     "abovian"
+    ],
+    "caption_ru": "Хачатур Абовян",
+    "caption_uz": "Խաչատուր Աբովյան",
+    "caption_en": "Khachatur Abovian"
+   }
+  ],
+  "18": [
+   {
+    "q": "Tsitsernakaberd Armenian Genocide Memorial",
+    "must": [
+     "tsitsernakaberd"
+    ],
+    "caption_ru": "Мемориал Цицернакаберд",
+    "caption_uz": "Ծիծեռնակաբերդի հուշահամալիր",
+    "caption_en": "Tsitsernakaberd memorial"
+   }
+  ],
+  "19": [
+   {
+    "q": "Sardarapat memorial",
+    "must": [
+     "sardarapat"
+    ],
+    "caption_ru": "Мемориал Сардарапат",
+    "caption_uz": "Սարդարապատի հուշահամալիր",
+    "caption_en": "Sardarapat memorial"
+   }
+  ],
+  "20": [
+   {
+    "q": "Yerevan Republic Square",
+    "must": [
+     "republic",
+     "hanrapetutyan"
+    ],
+    "caption_ru": "Площадь Республики в Ереване",
+    "caption_uz": "Հանրապետության հրապարակ",
+    "caption_en": "Republic Square, Yerevan"
+   }
+  ],
+  "21": [
+   {
+    "q": "Freedom Square Yerevan",
+    "must": [
+     "freedom",
+     "azatutyan"
+    ],
+    "caption_ru": "Площадь Свободы",
+    "caption_uz": "Ազատության հրապարակ",
+    "caption_en": "Freedom Square, Yerevan"
+   }
+  ],
+  "22": [
+   {
+    "q": "Yerevan panorama Ararat",
+    "must": [
+     "yerevan"
+    ],
+    "caption_ru": "Ереван и Арарат",
+    "caption_uz": "Երևանը և Արարատը",
+    "caption_en": "Yerevan and Ararat"
+   }
+  ]
+ },
+ "civics": {
+  "1": [
+   {
+    "q": "National Assembly of Armenia building",
+    "must": [
+     "national assembly",
+     "parliament"
+    ],
+    "caption_ru": "Здание Национального собрания",
+    "caption_uz": "Ազգային ժողովի շենքը",
+    "caption_en": "National Assembly building"
+   }
+  ],
+  "2": [
+   {
+    "q": "Constitution of Armenia",
+    "must": [
+     "constitution"
+    ],
+    "caption_ru": "Конституция Армении",
+    "caption_uz": "ՀՀ Սահմանադրություն",
+    "caption_en": "Constitution of Armenia"
+   }
+  ],
+  "3": [
+   {
+    "q": "Constitutional Court of Armenia",
+    "must": [
+     "court"
+    ],
+    "caption_ru": "Конституционный суд Армении",
+    "caption_uz": "ՀՀ Սահմանադրական դատարան",
+    "caption_en": "Constitutional Court of Armenia"
+   }
+  ],
+  "4": [
+   {
+    "q": "Armenian wedding",
+    "must": [
+     "wedding"
+    ],
+    "caption_ru": "Свадьба",
+    "caption_uz": "Հարսանիք",
+    "caption_en": "Wedding"
+   }
+  ],
+  "5": [
+   {
+    "q": "Yerevan office",
+    "must": [
+     "yerevan"
+    ],
+    "caption_ru": "Деловой Ереван",
+    "caption_uz": "Գործարար Երևան",
+    "caption_en": "Business Yerevan"
+   }
+  ],
+  "6": [
+   {
+    "q": "Yerevan apartment buildings",
+    "must": [
+     "yerevan"
+    ],
+    "caption_ru": "Жилые дома Еревана",
+    "caption_uz": "Երևանի բնակելի շենքեր",
+    "caption_en": "Residential buildings in Yerevan"
+   }
+  ],
+  "7": [
+   {
+    "q": "Armenian dram banknotes",
+    "must": [
+     "dram"
+    ],
+    "caption_ru": "Армянские драмы",
+    "caption_uz": "Հայկական դրամ",
+    "caption_en": "Armenian dram"
+   }
+  ],
+  "8": [
+   {
+    "q": "Yerevan street police",
+    "must": [
+     "police",
+     "yerevan"
+    ],
+    "caption_ru": "Улица Еревана",
+    "caption_uz": "Երևանի փողոց",
+    "caption_en": "A street in Yerevan"
+   }
+  ],
+  "9": [
+   {
+    "q": "Armenian police car",
+    "must": [
+     "police"
+    ],
+    "caption_ru": "Полиция Армении",
+    "caption_uz": "Ոստիկանություն",
+    "caption_en": "Police of Armenia"
+   }
+  ],
+  "10": [
+   {
+    "q": "Zvartnots International Airport",
+    "must": [
+     "zvartnots"
+    ],
+    "caption_ru": "Аэропорт Звартноц",
+    "caption_uz": "«Զվարթնոց» օդանավակայան",
+    "caption_en": "Zvartnots Airport"
+   }
+  ],
+  "11": [
+   {
+    "q": "Armenian passport",
+    "must": [
+     "passport"
+    ],
+    "caption_ru": "Документы",
+    "caption_uz": "Փաստաթղթեր",
+    "caption_en": "Documents"
+   }
+  ],
+  "12": [
+   {
+    "q": "Coat of arms of Armenia",
+    "must": [
+     "coat of arms"
+    ],
+    "caption_ru": "Герб Армении",
+    "caption_uz": "ՀՀ զինանշան",
+    "caption_en": "Coat of arms of Armenia"
+   }
+  ],
+  "13": [
+   {
+    "q": "Yerevan Northern Avenue",
+    "must": [
+     "northern"
+    ],
+    "caption_ru": "Северный проспект",
+    "caption_uz": "Հյուսիսային պողոտա",
+    "caption_en": "Northern Avenue"
+   }
+  ],
+  "14": [
+   {
+    "q": "Yerevan new buildings",
+    "must": [
+     "yerevan"
+    ],
+    "caption_ru": "Новостройки Еревана",
+    "caption_uz": "Երևանի նորակառույցներ",
+    "caption_en": "New buildings in Yerevan"
+   }
+  ],
+  "15": [
+   {
+    "q": "Yerevan State University",
+    "must": [
+     "yerevan state university",
+     "ysu"
+    ],
+    "caption_ru": "Ереванский государственный университет",
+    "caption_uz": "Երևանի պետական համալսարան",
+    "caption_en": "Yerevan State University"
+   }
+  ],
+  "16": [
+   {
+    "q": "Hospital Yerevan",
+    "must": [
+     "hospital",
+     "medical"
+    ],
+    "caption_ru": "Больница в Ереване",
+    "caption_uz": "Հիվանդանոց Երևանում",
+    "caption_en": "A hospital in Yerevan"
+   }
+  ],
+  "17": [
+   {
+    "q": "Central Bank of Armenia",
+    "must": [
+     "central bank"
+    ],
+    "caption_ru": "Центральный банк Армении",
+    "caption_uz": "ՀՀ Կենտրոնական բանկ",
+    "caption_en": "Central Bank of Armenia"
+   }
+  ],
+  "18": [
+   {
+    "q": "Yerevan traffic street",
+    "must": [
+     "yerevan"
+    ],
+    "caption_ru": "Дорожное движение в Ереване",
+    "caption_uz": "Երթևեկություն Երևանում",
+    "caption_en": "Traffic in Yerevan"
+   }
+  ],
+  "19": [
+   {
+    "q": "Yerevan Cascade people",
+    "must": [
+     "cascade"
+    ],
+    "caption_ru": "Каскад в Ереване",
+    "caption_uz": "Կասկադ",
+    "caption_en": "The Cascade, Yerevan"
+   }
+  ],
+  "20": [
+   {
+    "q": "Yerevan City Hall",
+    "must": [
+     "city hall",
+     "municipality"
+    ],
+    "caption_ru": "Мэрия Еревана",
+    "caption_uz": "Երևանի քաղաքապետարան",
+    "caption_en": "Yerevan City Hall"
+   }
+  ]
+ },
+ "culture": {
+  "1": [
+   {
+    "q": "Armenian table feast",
+    "must": [
+     "armenian"
+    ],
+    "caption_ru": "Армянское застолье",
+    "caption_uz": "Հայկական սեղան",
+    "caption_en": "An Armenian feast"
+   }
+  ],
+  "2": [
+   {
+    "q": "Armenian coffee jazzve",
+    "must": [
+     "coffee",
+     "jazzve",
+     "cezve"
+    ],
+    "caption_ru": "Армянский кофе в джезве",
+    "caption_uz": "Հայկական սուրճ ջեզվեով",
+    "caption_en": "Armenian coffee in a jazzve"
+   }
+  ],
+  "3": [
+   {
+    "q": "Lavash tonir",
+    "must": [
+     "lavash"
+    ],
+    "caption_ru": "Выпечка лаваша в тонире",
+    "caption_uz": "Լավաշի թխում թոնրում",
+    "caption_en": "Baking lavash in a tonir"
+   }
+  ],
+  "4": [
+   {
+    "q": "Tolma Armenian dish",
+    "must": [
+     "tolma",
+     "dolma"
+    ],
+    "caption_ru": "Толма",
+    "caption_uz": "Տոլմա",
+    "caption_en": "Tolma"
+   }
+  ],
+  "5": [
+   {
+    "q": "Matzoon",
+    "must": [
+     "matsoni",
+     "matzoon",
+     "matsun"
+    ],
+    "caption_ru": "Мацун",
+    "caption_uz": "Մածուն",
+    "caption_en": "Matzoon"
+   }
+  ],
+  "6": [
+   {
+    "q": "Armenian cradle",
+    "must": [
+     "cradle",
+     "orror"
+    ],
+    "caption_ru": "Колыбель",
+    "caption_uz": "Օրորոց",
+    "caption_en": "A cradle"
+   }
+  ],
+  "7": [
+   {
+    "q": "Armenian engagement",
+    "must": [
+     "armenian"
+    ],
+    "caption_ru": "Армянская традиция",
+    "caption_uz": "Հայկական ավանդույթ",
+    "caption_en": "Armenian tradition"
+   }
+  ],
+  "8": [
+   {
+    "q": "Armenian wedding dance",
+    "must": [
+     "wedding"
+    ],
+    "caption_ru": "Армянская свадьба",
+    "caption_uz": "Հայկական հարսանիք",
+    "caption_en": "An Armenian wedding"
+   }
+  ],
+  "9": [
+   {
+    "q": "Armenian family",
+    "must": [
+     "family"
+    ],
+    "caption_ru": "Армянская семья",
+    "caption_uz": "Հայ ընտանիք",
+    "caption_en": "An Armenian family"
+   }
+  ],
+  "10": [
+   {
+    "q": "Khachkar cemetery Noratus",
+    "must": [
+     "noratus"
+    ],
+    "caption_ru": "Хачкары кладбища Норатус",
+    "caption_uz": "Նորատուսի խաչքարեր",
+    "caption_en": "Khachkars of Noratus"
+   }
+  ],
+  "11": [
+   {
+    "q": "Trndez bonfire",
+    "must": [
+     "trndez",
+     "tearnendaraj"
+    ],
+    "caption_ru": "Костёр на Трндез",
+    "caption_uz": "Տրնդեզի խարույկ",
+    "caption_en": "Trndez bonfire"
+   }
+  ],
+  "12": [
+   {
+    "q": "Vardavar",
+    "must": [
+     "vardavar"
+    ],
+    "caption_ru": "Вардавар",
+    "caption_uz": "Վարդավառ",
+    "caption_en": "Vardavar"
+   }
+  ],
+  "13": [
+   {
+    "q": "Navasard Hayk",
+    "must": [
+     "hayk"
+    ],
+    "caption_ru": "Хайк Наапет",
+    "caption_uz": "Հայկ Նահապետ",
+    "caption_en": "Hayk the ancestor"
+   }
+  ],
+  "14": [
+   {
+    "q": "Armenian Easter eggs",
+    "must": [
+     "easter"
+    ],
+    "caption_ru": "Пасхальные яйца",
+    "caption_uz": "Զատկի ձվեր",
+    "caption_en": "Easter eggs"
+   }
+  ],
+  "15": [
+   {
+    "q": "Armenia Independence Day",
+    "must": [
+     "independence"
+    ],
+    "caption_ru": "День независимости",
+    "caption_uz": "Անկախության օր",
+    "caption_en": "Independence Day"
+   }
+  ],
+  "16": [
+   {
+    "q": "Armenian traditional costume taraz",
+    "must": [
+     "taraz",
+     "costume",
+     "dress"
+    ],
+    "caption_ru": "Армянский национальный костюм",
+    "caption_uz": "Հայկական տարազ",
+    "caption_en": "Armenian national costume"
+   }
+  ],
+  "17": [
+   {
+    "q": "Khachkar",
+    "must": [
+     "khachkar"
+    ],
+    "caption_ru": "Хачкар",
+    "caption_uz": "Խաչքար",
+    "caption_en": "Khachkar"
+   }
+  ],
+  "18": [
+   {
+    "q": "Duduk",
+    "must": [
+     "duduk"
+    ],
+    "caption_ru": "Дудук",
+    "caption_uz": "Դուդուկ",
+    "caption_en": "Duduk"
+   }
+  ],
+  "19": [
+   {
+    "q": "Armenian folk dance",
+    "must": [
+     "dance"
+    ],
+    "caption_ru": "Армянский народный танец",
+    "caption_uz": "Հայկական ժողովրդական պար",
+    "caption_en": "Armenian folk dance"
+   }
+  ],
+  "20": [
+   {
+    "q": "Armenian pomegranate",
+    "must": [
+     "pomegranate"
+    ],
+    "caption_ru": "Гранат — символ Армении",
+    "caption_uz": "Նուռը՝ Հայաստանի խորհրդանիշ",
+    "caption_en": "Pomegranate, a symbol of Armenia"
+   }
+  ]
+ }
+}
