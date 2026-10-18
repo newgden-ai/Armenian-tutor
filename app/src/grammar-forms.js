@@ -1,58 +1,58 @@
 // «Как образуется форма»: таблицы для тем грамматики — по каждому лицу и числу
-// корень + суффикс + окончание = форма, на двух глаголах (основа на согласный и на гласный).
-// Формы берутся из uzmorph.js, поэтому таблицы всегда совпадают с упражнениями.
+// корень + суффикс + окончание (+ вспомогательный глагол) = форма, на глаголах -ել и -ալ спряжения.
+// Формы берутся из hymorph.js, поэтому таблицы всегда совпадают с упражнениями.
 import { t, getLang } from './i18n.js';
 import { h } from './ui.js';
-import { conjugate, decline, acceptedForms, PERSONS, CASES } from './uzmorph.js';
+import { conjugate, decline, acceptedForms, PERSONS, CASES, withArticle } from './hymorph.js';
 
-// тема грамматики (№) → какие таблицы показать
+// тема грамматики (№ в армянском курсе) → какие таблицы показать
 const TOPIC_TABLES = {
-  3: [['pres_fut', false]], 5: [['past_def', false]], 6: [['past_indef', false]],
-  7: [['pres_cont', false], ['pres_moqda', false]], 8: [['pres_fut', true], ['past_def', true]],
-  16: [['imper', false], ['imper', true]], 21: [['fut_pres', false]], 22: [['fut_intent', false]],
-  23: [['cond', false]], 24: [['wish', false], ['unreal', false]],
-  25: [['past_cont', false], ['past_habit', false], ['past_perf', false]], 26: [['can', false]],
-  9: 'cases', 10: 'poss', 11: 'plural', 27: 'overview',
+  10: [['pres', false], ['can', false]], 11: [['imperf', false]], 12: [['aorist', false]],
+  13: [['perfect', false], ['pluperf', false], ['fut', false]], 14: [['pres', true], ['aorist', true], ['perfect', true]],
+  15: [['imper', false], ['imper', true], ['subj', false], ['cond', false]],
+  3: 'plural', 4: 'cases', 5: 'poss',
 };
-const EX = ['bormoq', 'oʻqimoq'];           // основа на согласный / на гласный
+const EX = ['գրել', 'կարդալ'];                                   // спряжение на -ել и на -ալ
+const EX_MORE = { aorist: ['գրել', 'կարդալ', 'տեսնել'] };          // + глагол с выпадающим -ն-
 const PERS_RU = ['я', 'ты', 'он, она', 'мы', 'вы', 'они'];
 const PERS_EN = ['I', 'you', 'he, she', 'we', 'you (pl.)', 'they'];
-// личные окончания по временам (men, sen, u, biz, siz, ular)
-const E_PRES = ['man', 'san', 'di', 'miz', 'siz', 'di'];
-const E_PROG = ['man', 'san', 'ti', 'miz', 'siz', 'ti'];
-const E_PRED = ['man', 'san', '', 'miz', 'siz', ''];
-const E_POSS = ['m', 'ng', '', 'k', 'ngiz', ''];
-const TENSE_END = { pres_fut: E_PRES, past_narr: E_PRES, pres_cont: E_PROG, pres_moqda: E_PRED, past_indef: E_PRED,
-  fut_pres: E_PRED, fut_intent: E_PRED, past_def: E_POSS, cond: E_POSS, wish: E_POSS, can: E_PRES };
+// личные окончания синтетических форм (самые длинные — первыми)
+const ENDINGS = ['այինք', 'այիք', 'այիր', 'ային', 'եինք', 'եիք', 'եիր', 'եին', 'այի', 'եի', 'ինք', 'իք', 'իր', 'ին', 'անք', 'աք', 'ար', 'ավ', 'ան',
+  'ենք', 'եք', 'ես', 'եմ', 'են', 'ամ', 'աս', 'եր', 'ի', 'ա'];
+const AUXES = new Set(['եմ', 'ես', 'է', 'ենք', 'եք', 'են', 'էի', 'էիր', 'էր', 'էինք', 'էիք', 'էին', 'չեմ', 'չես', 'չի', 'չենք', 'չեք', 'չեն',
+  'չէի', 'չէիր', 'չէր', 'չէինք', 'չէիք', 'չէին', 'թող', 'մի']);
 
-// bor + a + man: разбор формы на корень, суффикс времени и личное окончание
-function split(form, stem, tenseId, i) {
+const prefixLen = (a, b) => { let i = 0; while (i < a.length && i < b.length && a[i] === b[i]) i++; return i; };
+
+// գր + ում + եմ / չ + գր + եց + ի: разбор одного слова формы на части
+function splitWord(word, stem) {
+  let pre = '';
+  let w = word;
+  if (/^[չկ]/.test(w) && !stem.startsWith(w[0])) { pre = w[0]; w = w.slice(1); }
+  const n = prefixLen(stem, w);
+  if (!n) return [{ txt: word, cls: 'gf-suf' }];
+  const root = w.slice(0, n);
+  const rest = w.slice(n);
+  const e = ENDINGS.find((x) => rest.endsWith(x) && rest.length >= x.length) || '';
+  return [pre && { txt: pre, cls: 'gf-end' }, { txt: root, cls: 'gf-root' }, { txt: rest.slice(0, rest.length - e.length), cls: 'gf-suf' },
+    { txt: e, cls: 'gf-end' }].filter((x) => x && x.txt);
+}
+function split(form, stem) {
   const f = acceptedForms(form)[0];
-  if (!f.startsWith(stem)) return { root: '', suf: f, end: '' };
-  let rest = f.slice(stem.length);
-  let aux = '';
-  const sp = rest.indexOf(' ');
-  if (tenseId === 'can') {                       // bor + a ol + aman
-    const k = rest.lastIndexOf('ol');
-    return { root: stem, suf: rest.slice(0, k + 2), end: rest.slice(k + 2) };
-  }
-  if (tenseId === 'imper') return { root: stem, suf: '', end: rest };
-  if (sp >= 0) { aux = rest.slice(sp); rest = rest.slice(0, sp); }   // вспомогательное слово (edi, boʻlardi, emas)
-  const endings = TENSE_END[tenseId];
-  const e = endings ? endings[i] : '';
-  if (e && rest.endsWith(e) && rest.length > e.length) return { root: stem, suf: rest.slice(0, -e.length), end: e + aux };
-  return { root: stem, suf: rest, end: aux };
+  return f.split(' ').flatMap((word) => (AUXES.has(word) || word === 'կարող' ? [{ txt: word, cls: 'gf-end' }] : splitWord(word, stem)));
 }
 
-const piece = (txt, cls) => (txt ? h('span', { class: cls }, txt.trim()) : null);
 const plus = () => h('span', { class: 'gf-plus' }, '+');
-function formula(p) {
-  const parts = [piece(p.root, 'gf-root'), piece(p.suf, 'gf-suf'), piece(p.end, 'gf-end')].filter(Boolean);
-  return parts.flatMap((x, i) => (i ? [plus(), x] : [x]));
+function formula(parts) {
+  return parts.flatMap((p, i) => {
+    const el = h('span', { class: p.cls }, p.txt);
+    return i ? [plus(), el] : [el];
+  });
 }
 
 function tenseTable(tenseId, neg) {
-  const vs = EX.map((v) => conjugate(v));
+  const ex = EX_MORE[tenseId] || EX;
+  const vs = ex.map((v) => conjugate(v));
   const tn = vs.map((c) => c.tenses.find((x) => x.id === tenseId));
   const name = getLang() === 'hy' ? tn[0].uz : getLang() === 'en' ? tn[0].en : tn[0].ru;
   const pers = getLang() === 'en' ? PERS_EN : PERS_RU;
@@ -62,42 +62,53 @@ function tenseTable(tenseId, neg) {
     h('div', { class: 'gf-legend' }, h('span', { class: 'gf-root' }, t('gfRoot')), plus(), h('span', { class: 'gf-suf' }, t('gfSuf')), plus(),
       h('span', { class: 'gf-end' }, t('gfEnd'))),
     h('table', { class: 'gf-table' },
-      h('thead', {}, h('tr', {}, h('th', {}, t('gfPerson')), ...EX.map((v) => h('th', {}, v)))),
+      h('thead', {}, h('tr', {}, h('th', {}, t('gfPerson')), ...ex.map((v) => h('th', {}, v)))),
       h('tbody', {}, PERSONS.map((p, i) => h('tr', {},
         h('td', { class: 'gf-p' }, h('b', {}, p), h('div', { class: 'tiny muted' }, pers[i])),
         ...tn.map((x, k) => {
           const cell = (neg ? x.neg : x.pos)[i];
-          const stem = vs[k].prefix + vs[k].stem;
-          return h('td', {}, h('div', { class: 'gf-formula' }, formula(split(cell, stem, tenseId, i))), h('div', { class: 'gf-result' }, cell));
+          return h('td', {}, h('div', { class: 'gf-formula' }, formula(split(cell, vs[k].stem))), h('div', { class: 'gf-result' }, cell));
         }))))));
 }
 
+const HINT = { nom: '—', gen: '-ի', dat: '-ի', acc: '= ուղղ.', abl: '-ից', ins: '-ով', loc: '-ում' };
 function casesTable(kind) {
-  const words = ['kitob', 'bola', 'yurak'];
+  const words = ['քաղաք', 'գիրք', 'տղա'];
   const ds = words.map((w) => decline(w));
   const col = kind === 'plural' ? 'pl' : 'sg';
-  const hint = { nom: '—', gen: '-ning', acc: '-ni', dat: '-ga / -ka / -qa', loc: '-da', abl: '-dan' };
   return h('div', { class: 'gf-card' },
     h('div', { class: 'gf-title' }, kind === 'plural' ? t('gfPluralTitle') : t('gfCasesTitle')),
     h('div', { class: 'gf-legend' }, h('span', { class: 'gf-root' }, t('gfWord')), plus(),
-      kind === 'plural' ? [h('span', { class: 'gf-suf' }, '-lar'), plus()] : null, h('span', { class: 'gf-end' }, t('gfCaseEnd'))),
+      kind === 'plural' ? [h('span', { class: 'gf-suf' }, '-եր / -ներ'), plus()] : null, h('span', { class: 'gf-end' }, t('gfCaseEnd'))),
     h('table', { class: 'gf-table' },
       h('thead', {}, h('tr', {}, h('th', {}, t('gfCase')), h('th', {}, t('gfEnding')), ...words.map((w) => h('th', {}, w)))),
       h('tbody', {}, CASES.map((cs, i) => h('tr', {},
-        h('td', { class: 'gf-p' }, h('b', {}, cs.uz.split(' ')[0]), h('div', { class: 'tiny muted' }, cs.q)),
-        h('td', {}, h('span', { class: 'gf-end' }, kind === 'plural' ? `-lar${hint[cs.id] === '—' ? '' : hint[cs.id].replace(' / -ka / -qa', '')}` : hint[cs.id])),
+        h('td', { class: 'gf-p' }, h('b', {}, cs.uz), h('div', { class: 'tiny muted' }, cs.q)),
+        h('td', {}, h('span', { class: 'gf-end' }, HINT[cs.id])),
         ...ds.map((d, k) => {
-          const f = d.columns.find((c) => c.id === col).forms[i];
-          return h('td', {}, h('div', { class: 'gf-formula' }, formula({ root: words[k], suf: kind === 'plural' ? 'lar' : '', end: f.slice(words[k].length + (kind === 'plural' ? 3 : 0)) })),
-            h('div', { class: 'gf-result' }, f));
-        }))))));
+          const c = d.columns.find((x) => x.id === col);
+          const f = c.forms[i];
+          let parts;
+          if (kind === 'plural') {
+            const pl = c.base;                                     // քաղաքներ, գրքեր
+            const sufLen = pl.endsWith('ներ') ? 3 : 2;
+            parts = [{ txt: pl.slice(0, -sufLen), cls: 'gf-root' }, { txt: pl.slice(-sufLen), cls: 'gf-suf' }, { txt: f.slice(pl.length), cls: 'gf-end' }];
+          } else {
+            const n = prefixLen(words[k], f);
+            parts = [{ txt: f.slice(0, n), cls: 'gf-root' }, { txt: f.slice(n), cls: 'gf-end' }];
+          }
+          return h('td', {}, h('div', { class: 'gf-formula' }, formula(parts.filter((p) => p.txt))), h('div', { class: 'gf-result' }, f));
+        }))))),
+    kind === 'plural' ? h('p', { class: 'tiny muted' }, t('gfPluralNote')) : h('p', { class: 'tiny muted' }, t('gfCasesNote')));
 }
 
+// Артикли и «мой / твой»: գիրքս, գիրքդ, նրա գիրքը, մեր գիրքը …
 function possTable() {
-  const words = ['kitob', 'bola', 'oʻgʻil'];
-  const ds = words.map((w) => decline(w));
+  const words = ['գիրք', 'տղա', 'տուն'];
+  const PRON = [null, null, 'նրա', 'մեր', 'ձեր', 'նրանց'];
   const pers = getLang() === 'en' ? ['my', 'your', 'his/her', 'our', 'your (pl.)', 'their'] : ['мой', 'твой', 'его, её', 'наш', 'ваш', 'их'];
-  const ends = ['-(i)m', '-(i)ng', '-(s)i', '-(i)miz', '-(i)ngiz', '-(s)i'];
+  const ends = ['-ս', '-դ', 'նրա … -ը / -ն', 'մեր … -ը / -ն', 'ձեր … -ը / -ն', 'նրանց … -ը / -ն'];
+  const cell = (w, i) => (i === 0 ? w + 'ս' : i === 1 ? w + 'դ' : `${PRON[i]} ${withArticle(w)}`);
   return h('div', { class: 'gf-card' },
     h('div', { class: 'gf-title' }, t('gfPossTitle')),
     h('div', { class: 'gf-legend' }, h('span', { class: 'gf-root' }, t('gfWord')), plus(), h('span', { class: 'gf-end' }, t('gfPossEnd'))),
@@ -106,21 +117,14 @@ function possTable() {
       h('tbody', {}, PERSONS.map((p, i) => h('tr', {},
         h('td', { class: 'gf-p' }, h('b', {}, p), h('div', { class: 'tiny muted' }, pers[i])),
         h('td', {}, h('span', { class: 'gf-end' }, ends[i])),
-        ...ds.map((d) => h('td', {}, h('div', { class: 'gf-result' }, d.columns.find((c) => c.id === `poss${i}`).forms[0]))))))),
-    h('p', { class: 'tiny muted' }, t('gfPossNote')));
-}
-
-function overviewTable() {
-  const c = conjugate('bormoq');
-  return h('div', { class: 'gf-card' },
-    h('div', { class: 'gf-title' }, t('gfOverview')),
+        ...words.map((w) => h('td', {}, h('div', { class: 'gf-result' }, cell(w, i)))))))),
+    h('p', { class: 'tiny muted' }, t('gfPossNote')),
+    // определённый артикль в падежах
     h('table', { class: 'gf-table' },
-      h('thead', {}, h('tr', {}, h('th', {}, t('gfTense')), h('th', {}, t('gfSuffix')), h('th', {}, 'men'), h('th', {}, 'u'))),
-      h('tbody', {}, c.tenses.map((tn) => h('tr', {},
-        h('td', { class: 'gf-p' }, h('b', {}, getLang() === 'hy' ? tn.uz : getLang() === 'en' ? tn.en : tn.ru)),
-        h('td', {}, h('span', { class: 'gf-suf' }, tn.aff)),
-        h('td', {}, h('div', { class: 'gf-result' }, tn.pos[0])),
-        h('td', {}, h('div', { class: 'gf-result' }, acceptedForms(tn.pos[2])[0])))))));
+      h('thead', {}, h('tr', {}, h('th', {}, t('gfCase')), ...words.map((w) => h('th', {}, w)))),
+      h('tbody', {}, CASES.map((cs, i) => h('tr', {},
+        h('td', { class: 'gf-p' }, h('b', {}, cs.uz)),
+        ...words.map((w) => h('td', {}, h('div', { class: 'gf-result' }, decline(w).columns.find((c) => c.id === 'def').forms[i]))))))));
 }
 
 // Блок для страницы темы грамматики (или null, если у темы нет таблиц)
@@ -131,7 +135,6 @@ export function grammarFormsBlock(unit) {
   let tables;
   if (spec === 'cases' || spec === 'plural') tables = [casesTable(spec)];
   else if (spec === 'poss') tables = [possTable()];
-  else if (spec === 'overview') tables = [overviewTable()];
   else tables = spec.map(([id, neg]) => tenseTable(id, neg));
   return h('div', {}, h('h2', {}, t('gfTitle')), h('p', { class: 'small muted' }, t('gfHint')), tables);
 }

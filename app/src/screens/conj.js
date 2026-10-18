@@ -8,7 +8,10 @@ import { FEATURES } from '../features.js';
 import { t, getLang } from '../i18n.js';
 import { h, mount, spinner, sheet, haptic } from '../ui.js';
 import { icon } from '../icons.js';
-import { conjugate, decline, acceptedForms, isVerb, PERSONS } from '../uzmorph.js';
+import { conjugate, decline, acceptedForms, isVerb, PERSONS } from '../hymorph.js';
+import { hyKeyboard } from '../hykeyboard.js';
+// существительные, для которых есть таблица склонения (из data/pos.csv — тот же список, что в базе)
+import { NOUN_IDS } from '../nouns.js';
 import { formTranslation } from '../verbtr.js';
 import { displayUz } from '../normalize.js';
 import { openTenses, commonRoot, cellOk, reportSheet, flagButton, stableRedraw } from '../morph.js';
@@ -113,9 +116,9 @@ export async function conjSheet(verb, app = appRef) {
 }
 
 export const declSheet = (noun, app = appRef) => declSheetImpl(noun, app);
-// Армянская версия: спряжение и склонение выключены (app/src/features.js) — таблицы построены на узбекской грамматике
-export const canConjugate = (word) => FEATURES.MORPH && word && isVerb(word.uz);
-export const canDecline = (word) => FEATURES.MORPH && word && !isVerb(word.uz) && decline(word.uz) && word.word_class !== 'phrase';
+export const canConjugate = (word) => FEATURES.MORPH && word && word.word_class !== 'phrase' && isVerb(word.uz)
+  && (!word.word_class || word.word_class === 'verb');
+export const canDecline = (word) => FEATURES.MORPH && word && NOUN_IDS.has(Number(word.id)) && Boolean(decline(word.uz));
 
 // ---------------------------------------------------------------- список глаголов
 const pill = (label, value, cls = '') => h('span', { class: `lvl-pill ${cls} ${value == null ? 'empty' : ''}` }, `${label} ${value == null ? '—' : value}`);
@@ -155,7 +158,7 @@ export async function renderConj(app, params = {}) {
     h('h1', {}, t('conjTitle')),
     h('p', { class: 'muted small' }, t('conjSub2')),
     h('div', { class: 'card note' }, icon('grammar'),
-      h('div', { class: 'small' }, open.none ? t('conjOpenNone') : t('conjOpenN', open.tenses.length, 16, open.neg),
+      h('div', { class: 'small' }, open.none ? t('conjOpenNone') : t('conjOpenN', open.tenses.length, 13, open.neg),
         h('div', { class: 'tiny muted' }, t('conjCap', st.conj_cap || 1)))),
     h('div', { class: 'two-btns' },
       h('button', { class: 'btn', type: 'button', onClick: () => app.go('conj', { train: 'form', verbs: pickMine(mine, 'f') }) },
@@ -299,8 +302,7 @@ function formTraining(app, verbs, morphs, open) {
             h('span', { class: 'chip' }, `${PERSONS[task.person]} · ${t(`pers${task.person}`)}`)),
           tr ? h('div', { class: 'conj-tr center-text' }, `«${tr}»`) : null),
         input,
-        h('div', { class: 'helper-row' }, ['oʻ', 'gʻ', 'ʼ'].map((s) =>
-          h('button', { class: 'chip-btn', type: 'button', onClick: () => { input.value += s; input.focus(); } }, s))),
+        hyKeyboard(input, { onEnter: check }),
         fb, btn)));
     setTimeout(() => input.focus(), 50);
   };
@@ -367,8 +369,6 @@ function tableTraining(app, verbs, morphs, open) {
     const btn = h('button', { class: 'btn btn-big', type: 'button', onClick: check }, t('check'));
     const morph = morphs[task.verb.id];
     const rows = forms.map((f, k) => ({ label: PERSONS[k], text: `${f} — ${formTranslation(morph, task.tense.id, task.neg, k, trLang())}` }));
-    let focused = inputs[0];
-    inputs.forEach((inp) => inp.addEventListener('focus', () => { focused = inp; }));
     mount(h('div', { class: 'screen session' },
       h('div', { class: 'session-top' },
         h('div', { class: 'progress' }, h('div', { class: 'bar', style: { width: `${Math.round((i / list.length) * 100)}%` } })),
@@ -387,8 +387,7 @@ function tableTraining(app, verbs, morphs, open) {
           inputs[k],
           fixes[k],
           h('div', { class: 'conj-tr tbl-tr' }, formTranslation(morph, task.tense.id, task.neg, k, trLang()))))),
-        h('div', { class: 'helper-row' }, ['oʻ', 'gʻ', 'ʼ'].map((s) =>
-          h('button', { class: 'chip-btn', type: 'button', onClick: () => { focused.value += s; focused.focus(); } }, s))),
+        hyKeyboard(inputs),
         fb, btn),
       h('p', { class: 'tiny muted' }, t('tableHint'))));
     setTimeout(() => inputs[0].focus(), 50);

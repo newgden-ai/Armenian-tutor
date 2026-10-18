@@ -1467,22 +1467,55 @@ Object.assign(en, {
   refStoryText: 'Learning Armenian in Telegram 🇦🇲 −5% with my link:',
 });
 
-// ---------------------------------------------------------------- армянская версия: клавиатура, транскрипция, план без диалогов
+// ---------------------------------------------------------------- армянская версия: клавиатура, транскрипция
 Object.assign(ru, {
   kbSpace: 'пробел', kbSystem: 'Системная клавиатура', kbArmenian: 'Армянская клавиатура',
   translit: 'Транскрипция',
-  recAbout: ['Чтобы не только заучивать слова, занятия идут по кругу:',
-    '1. Сессия слов. 2. Тема курса — по очереди грамматика, культура, обществознание и история. 3. Закрепление: предложения или контрольная.',
-    'Темы подбираются по вашему уровню. Слова пройденных тем сразу встают в очередь заучивания.'],
 });
 Object.assign(en, {
   kbSpace: 'space', kbSystem: 'System keyboard', kbArmenian: 'Armenian keyboard',
   translit: 'Transcription',
-  recAbout: ['To go beyond memorising words, lessons follow a cycle:',
-    '1. A word session. 2. A course topic — grammar, culture, civics and history in turn. 3. Consolidation: sentences or a quiz.',
-    'Topics are matched to your level. Words from completed topics go straight into your learning queue.'],
 });
 
+
+// ---------------------------------------------------------------- армянская версия: спряжение, склонение, «Как образуется»
+Object.assign(ru, {
+  conjNote: 'Формы построены по правилам восточноармянского литературного языка; ошибку можно отметить флажком ⚑.',
+  conjNote2: 'Формы построены по правилам восточноармянского литературного языка. Перевод — несовершенным видом (в армянском виды не различаются). Ошибку отметьте флажком ⚑.',
+  conjGroup_conditional: 'Желательное и условное', conjGroup_nonfinite: 'Причастия (դերբայներ)',
+  conjOpenNone: 'Пока открыто только настоящее время (-ում եմ). Новые времена откроются, когда вы пройдёте темы грамматики о глаголе или сдадите тест уровня.',
+  declSub: 'Существительные словаря по уровням: 7 падежей, определённый артикль, множественное число, «мой / твой» (-ս / -դ).',
+  declDef: 'С артиклем',
+  declNote: 'Падежи по правилам; у части слов бывают исключения — отметьте ошибку флажком ⚑. Винительный неодушевлённых = именительному, одушевлённых = дательному.',
+  declOpenNone: 'Пока открыты падежи единственного числа. Множественное число, артикль и притяжательные формы откроются после тем грамматики.',
+  declOpenCols: (poss, pl) => `В упражнениях: падежи${pl ? ', множественное число' : ''}${poss ? ', артикль и притяжательные формы' : ''}.`,
+  declCap: (cap) => `Максимальный уровень сейчас: ${cap} из 15 — растёт с темами о падежах, множественном числе и артиклях.`,
+  tableHint: 'Можно писать только часть после корня или всю форму целиком; местоимение (ես, դու…) перед формой не мешает.',
+  gfHint: 'Корень + суффикс + окончание (и вспомогательный глагол) для каждого лица и числа. Глаголы на -ել и на -ալ спрягаются немного по-разному.',
+  gfCasesTitle: 'Падежные окончания', gfPluralTitle: 'Множественное число + падеж',
+  gfCasesNote: 'Гласные ի и ու в последнем слоге часто выпадают: գիրք → գրքի, ջուր → ջրի. После гласного добавляется յ: տղա → տղայի.',
+  gfPluralNote: 'Односложные слова — -եր (գիրք → գրքեր), многосложные — -ներ (քաղաք → քաղաքներ). Исключения: մարդ → մարդիկ, կին → կանայք.',
+  gfPossTitle: 'Артикли и «мой / твой»', gfPossEnd: 'артикль',
+  gfPossNote: 'Артикль -ը после согласного, -ն после гласного (տղան). «Мой» и «твой» — артикли -ս и -դ (գիրքս, գիրքդ); для «его, наш, ваш, их» — местоимение и артикль -ը/-ն. Ниже — падежи с определённым артиклем.',
+});
+Object.assign(en, {
+  conjNote: 'Forms follow the rules of Eastern Armenian; mark a mistake with the ⚑ flag.',
+  conjNote2: 'Forms follow the rules of literary Eastern Armenian. Translations are approximate. Mark a mistake with the ⚑ flag.',
+  conjGroup_conditional: 'Subjunctive & conditional', conjGroup_nonfinite: 'Participles (դերբայներ)',
+  conjOpenNone: 'Only the present tense (-ում եմ) is open so far. New tenses open as you complete grammar topics about the verb or pass a level test.',
+  declSub: 'Dictionary nouns by level: 7 cases, the definite article, plural and “my / your” (-ս / -դ).',
+  declDef: 'Definite',
+  declNote: 'Cases follow the rules; some words are exceptions — mark a mistake with the ⚑ flag. Inanimate accusative = nominative, animate = dative.',
+  declOpenNone: 'Singular cases are open so far. Plural, the article and possessive forms open after the grammar topics.',
+  declOpenCols: (poss, pl) => `In exercises: cases${pl ? ', plural' : ''}${poss ? ', article and possessive forms' : ''}.`,
+  declCap: (cap) => `Current maximum level: ${cap} of 15 — it grows with the topics on cases, plural and articles.`,
+  tableHint: 'You can type just the part after the root or the whole form; a pronoun (ես, դու…) before it is fine.',
+  gfHint: 'Root + suffix + ending (and the auxiliary verb) for every person and number. Verbs in -ել and -ալ conjugate slightly differently.',
+  gfCasesNote: 'The vowels ի and ու of the last syllable often drop: գիրք → գրքի, ջուր → ջրի. After a vowel, յ is added: տղա → տղայի.',
+  gfPluralNote: 'One-syllable words take -եր (գիրք → գրքեր), longer ones -ներ (քաղաք → քաղաքներ). Exceptions: մարդ → մարդիկ, կին → կանայք.',
+  gfPossTitle: 'Articles and “my / your”', gfPossEnd: 'article',
+  gfPossNote: 'The article is -ը after a consonant and -ն after a vowel (տղան). “My” and “your” are the articles -ս and -դ (գիրքս, գիրքդ); “his, our, your, their” use a pronoun and -ը/-ն. Below: cases with the definite article.',
+});
 
 // ---------------------------------------------------------------- другие языковые приложения
 Object.assign(ru, {

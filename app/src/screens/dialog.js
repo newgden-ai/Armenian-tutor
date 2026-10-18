@@ -6,6 +6,7 @@ import { t, getLang } from '../i18n.js';
 import { h, mount, haptic } from '../ui.js';
 import { icon } from '../icons.js';
 import { keyUz } from '../normalize.js';
+import { translitLine } from '../exercise-view.js';
 import { pick, unitWords } from './course.js';
 
 const shuffle = (a) => { const b = [...a]; for (let i = b.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [b[i], b[j]] = [b[j], b[i]]; } return b; };
@@ -17,7 +18,7 @@ export function renderDialog(app, u) {
   const speakers = ex.speakers || {};
   let showTr = false;
   const lineEls = lines.map((ln) => {
-    const trEl = h('div', { class: 'dlg-tr' }, tr(ln));
+    const trEl = h('div', { class: 'dlg-tr' }, translitLine(ln.uz, 'translit small'), tr(ln));
     const el = h('button', { class: `dlg-line ${ln.who === 'A' ? 'a' : 'b'}`, type: 'button', onClick: () => el.classList.toggle('open') },
       h('div', { class: 'dlg-who' }, speakers[ln.who] || ln.who),
       h('div', { class: 'dlg-uz' }, ln.uz), trEl);
@@ -45,6 +46,9 @@ export function renderDialog(app, u) {
       u.next_id ? h('button', { class: 'btn btn-secondary', type: 'button', onClick: () => app.replace('unit', { id: u.next_id }) }, t('nextUnit')) : h('span', {}))));
 }
 
+// армянское слово без знаков по краям (։ ՝ , « » и т. п.); ՞ и ՛ внутри слова остаются
+const edge = (w) => w.replace(/^[^ա-ֆԱ-Ֆ]+|[^ա-ֆԱ-Ֆ]+$/g, '');
+
 // ---------------------------------------------------------------- упражнения
 function buildTasks(u) {
   const ex = u.extra || {};
@@ -65,10 +69,10 @@ function buildTasks(u) {
     const words = ln.uz.split(/\s+/);
     let k = words.findIndex((w) => vocab.some((v) => keyUz(w).startsWith(keyUz(v).slice(0, Math.max(3, keyUz(v).length - 3)))));
     if (k < 0) k = words.reduce((best, w, j) => (keyUz(w).length > keyUz(words[best]).length ? j : best), 0);
-    const clean = words[k].replace(/[.,!?;:«»"]/g, '');
+    const clean = edge(words[k]);
     if (clean.length < 3 || used.has(keyUz(clean))) continue;
     used.add(keyUz(clean));
-    const pool = shuffle(lines.flatMap((l) => l.uz.split(/\s+/)).map((w) => w.replace(/[.,!?;:«»"]/g, ''))
+    const pool = shuffle(lines.flatMap((l) => l.uz.split(/\s+/)).map(edge)
       .filter((w) => w.length >= 3 && keyUz(w) !== keyUz(clean)));
     const distract = [...new Set(pool.map((w) => w))].slice(0, 3);
     const masked = words.map((w, j) => (j === k ? w.replace(clean, '_____') : w)).join(' ');

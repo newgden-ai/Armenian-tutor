@@ -13,7 +13,7 @@ begin
   if exists (select 1 from public.words where uz_key <> public.key_uz(uz)) then raise exception 'FAIL: uz_key ≠ key_uz(uz)'; end if;
   select count(*) into n from public.course_units where coalesce(title_uz, '') = '' or coalesce(express_uz, '') = '';
   if n > 0 then raise exception 'FAIL: % тем курсов без армянского текста', n; end if;
-  if exists (select 1 from public.course_units where course_id = 'dialogs') then raise exception 'FAIL: диалоги ещё не готовы'; end if;
+  if (select count(*) from public.course_units where course_id = 'dialogs') <> 30 then raise exception 'FAIL: диалогов не 30'; end if;
   raise notice 'ok: данные (% слов)', (select count(*) from public.words);
 end $$;
 
@@ -76,5 +76,35 @@ begin
 end $$;
 
 reset role;
+-- ---------------------------------------------------------------- спряжение и склонение
+do $$
+declare v jsonb; n int;
+begin
+  select count(*) into n from public.words where word_class = 'verb' and canonical_id is null and morph is not null;
+  if n < 450 then raise exception 'FAIL: переводы форм глаголов: %', n; end if;
+  if (select morph->'ru'->'pres'->>0 from public.words where uz = 'գրել' and canonical_id is null limit 1) <> 'пишу' then raise exception 'FAIL: գրել — «пишу»'; end if;
+  select count(*) into n from public.words where pos = 'n' and morph is not null;
+  if n < 1000 then raise exception 'FAIL: существительные с падежными формами: %', n; end if;
+  -- темы армянского курса: ничего не пройдено — потолок 1; пройдены все темы о глаголе (10–15) — 15
+  if (public.morph_state('a1a1a1a1-0000-0000-0000-000000000001')->>'conj_cap')::int <> 1 then raise exception 'FAIL: conj_cap без тем'; end if;
+  insert into public.course_progress (user_id, unit_id, read_at)
+    select 'a1a1a1a1-0000-0000-0000-000000000001', id, now() from public.course_units where course_id = 'grammar' and source_no between 3 and 15
+  on conflict do nothing;
+  v := public.morph_state('a1a1a1a1-0000-0000-0000-000000000001');
+  if (v->>'conj_cap')::int <> 15 or (v->>'decl_cap')::int <> 15 then raise exception 'FAIL: потолки после тем: %', v; end if;
+  raise notice 'ok: спряжение и склонение';
+end $$;
+set role authenticated;
+set request.jwt.claim.sub = 'a1a1a1a1-0000-0000-0000-000000000001';
+do $$
+declare r jsonb;
+begin
+  r := public.get_verbs();
+  if jsonb_array_length(r->'verbs') < 450 then raise exception 'FAIL: get_verbs %', jsonb_array_length(r->'verbs'); end if;
+  r := public.get_nouns();
+  if jsonb_array_length(r->'nouns') < 1000 then raise exception 'FAIL: get_nouns %', jsonb_array_length(r->'nouns'); end if;
+end $$;
+reset role;
+
 delete from public.profiles where id = 'a1a1a1a1-0000-0000-0000-000000000001';
 select 'armenian checks passed' as result;

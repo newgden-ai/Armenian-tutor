@@ -1,42 +1,41 @@
 // Склонение существительных: список по уровням, таблица падежей (ед., мн., притяжательные) с подсказками
 // перевода и упражнение «допишите окончания» со своим уровнем (decl). Столбцы открываются по темам
-// грамматики: падежи (9), множественное число (11), притяжательные аффиксы (10).
+// грамматики: падежи (4), множественное число (3), артикли и притяжательные формы (5).
 import { rpc } from '../api.js';
 import { t, getLang } from '../i18n.js';
 import { h, mount, spinner, sheet, haptic } from '../ui.js';
 import { icon } from '../icons.js';
-import { decline, CASES } from '../uzmorph.js';
+import { decline, CASES } from '../hymorph.js';
+import { hyKeyboard } from '../hykeyboard.js';
 import { CASE_MEANING, POSS_MEANING } from '../verbtr.js';
 import { displayUz } from '../normalize.js';
 import { openColumns, commonRoot, cellOk, reportSheet, flagButton, stableRedraw } from '../morph.js';
 
 const CEFRS = ['A1', 'A2', 'B1', 'B2'];
-const CASE_SHORT = ['Bosh', 'Qaratqich', 'Tushum', 'Joʻnalish', 'Oʻrin-payt', 'Chiqish'];
-const COL_LABEL = { sg: () => t('declSg'), pl: () => t('declPl'), poss0: () => 'mening', poss1: () => 'sening', poss2: () => 'uning',
-  poss3: () => 'bizning', poss4: () => 'sizning', poss5: () => 'ularning' };
+const CASE_SHORT = ['Ուղղ.', 'Սեռ.', 'Տր.', 'Հայց.', 'Բաց.', 'Գործ.', 'Ներգ.'];
+const COL_LABEL = { sg: () => t('declSg'), def: () => t('declDef'), pl: () => t('declPl'), poss0: () => 'իմ (-ս)', poss1: () => 'քո (-դ)' };
 const meaning = (v) => (getLang() === 'en' && v.e ? v.e : v.r);
 
-// Подсказка перевода для строки (падежа) столбца
-const POSS_RU = { m: ['мой', 'твой', 'его / её', 'наш', 'ваш', 'их'], f: ['моя', 'твоя', 'его / её', 'наша', 'ваша', 'их'],
-  n: ['моё', 'твоё', 'его / её', 'наше', 'ваше', 'их'] };
+// Подсказка перевода для строки (падежа) столбца. Русские формы — words.morph.ru: sg/pl = им, род, вин, дат, пр
+const POSS_RU = { m: ['мой', 'твой'], f: ['моя', 'твоя'], n: ['моё', 'твоё'] };
 export function caseHint(morph, enWord, colId, caseIdx) {
   const L = getLang() === 'en' ? 'en' : 'ru';
   const cs = CASES[caseIdx].id;
   if (L === 'en') {
     const w = enWord ? String(enWord).split(/[,;(]/)[0].trim() : '';
     if (!w) return CASE_MEANING.en[cs];
-    const base = colId === 'sg' ? `the ${w}` : colId === 'pl' ? `the ${w}s` : `${POSS_MEANING.en[Number(colId.slice(4))]} ${w}`;
-    return { nom: base, gen: `of ${base}`, acc: `${base} (object)`, dat: `to ${base}`, loc: `in / at ${base}`, abl: `from ${base}` }[cs];
+    const base = colId === 'sg' ? `a ${w}` : colId === 'def' ? `the ${w}` : colId === 'pl' ? `${w}s` : `${POSS_MEANING.en[Number(colId.slice(4))]} ${w}`;
+    return { nom: base, gen: `of ${base}`, dat: `to ${base}`, acc: `${base} (object)`, abl: `from ${base}`, ins: `with / by ${base}`, loc: `in ${base}` }[cs];
   }
   const r = morph && morph.ru;
   if (!r) return CASE_MEANING.ru[cs];
-  if (colId === 'sg' || colId === 'pl') {
-    const f = colId === 'sg' ? r.sg : r.pl;     // им, род, вин, дат, пр
-    return { nom: f[0], gen: `${f[1]} (чей? чего?)`, acc: f[2], dat: `к ${f[3]} / куда?`, loc: `в ${f[4]} / у…`, abl: `из ${f[1]} / от…` }[cs];
+  const f = colId === 'pl' ? r.pl : r.sg;     // им, род, вин, дат, пр
+  if (colId === 'poss0' || colId === 'poss1') {
+    const pron = (POSS_RU[r.g] || POSS_RU.m)[Number(colId.slice(4))];
+    return caseIdx === 0 ? `${pron} ${f[0]}` : `${CASE_MEANING.ru[cs].split(':')[1].trim()} (${pron} ${f[0]})`;
   }
-  const pi = Number(colId.slice(4));
-  const pron = (POSS_RU[r.g] || POSS_RU.m)[pi];
-  return caseIdx === 0 ? `${pron} ${r.sg[0]}` : `${CASE_MEANING.ru[cs].split(':')[1].trim()} (${pron} ${r.sg[0]})`;
+  return { nom: f[0], gen: `${f[1]} (чей? чего?)`, dat: `${f[3]} (кому? чему?)`, acc: f[2], abl: `из / от ${f[1]}`,
+    ins: `(чем? с кем?) ${f[0]}`, loc: `в ${f[4]}` }[cs];
 }
 
 function declTable(noun, morph, col) {
@@ -176,12 +175,10 @@ async function declTraining(app, nouns) {
     const root = commonRoot(c.forms, task.noun.uz);
     const morph = morphs[task.noun.id];
     let checked = false;
-    // именительный падеж показан готовым — спрашиваем остальные 5
+    // именительный падеж показан готовым — спрашиваем остальные 6
     const inputs = c.forms.map((f, k) => (k === 0 ? null : h('input', { class: 'tbl-inp', type: 'text', autocomplete: 'off', autocapitalize: 'off', spellcheck: 'false', placeholder: '…' })));
     const ins = inputs.filter(Boolean);
     ins.forEach((inp, k) => inp.addEventListener('keydown', (e) => { if (e.key === 'Enter') { if (ins[k + 1]) ins[k + 1].focus(); else check(); } }));
-    let focused = ins[0];
-    ins.forEach((inp) => inp.addEventListener('focus', () => { focused = inp; }));
     const fixes = c.forms.map(() => h('div', { class: 'tbl-fix' }));
     const fb = h('div', {});
     const check = () => {
@@ -194,11 +191,11 @@ async function declTraining(app, nouns) {
         inp.classList.add(good ? 'ok' : 'bad'); inp.disabled = true;
         if (good) ok++; else fixes[k].textContent = `→ ${c.forms[k]}`;
       });
-      score += ok; total += 5;
+      score += ok; total += ins.length;
       const r = results[task.noun.id] || (results[task.noun.id] = { ok: 0, total: 0, uz: task.noun.uz });
-      r.ok += ok; r.total += 5;
-      haptic(ok === 5 ? 'success' : 'error');
-      fb.replaceChildren(h('div', { class: `feedback show ${ok >= 4 ? 'good' : 'bad'}` }, h('b', {}, t('tableScore', ok, 5))));
+      r.ok += ok; r.total += ins.length;
+      haptic(ok === ins.length ? 'success' : 'error');
+      fb.replaceChildren(h('div', { class: `feedback show ${ok >= ins.length - 1 ? 'good' : 'bad'}` }, h('b', {}, t('tableScore', ok, ins.length))));
       btn.textContent = t('next');
     };
     const btn = h('button', { class: 'btn btn-big', type: 'button', onClick: check }, t('check'));
@@ -219,8 +216,7 @@ async function declTraining(app, nouns) {
           inputs[k] || h('span', {}),
           fixes[k],
           h('div', { class: 'conj-tr tbl-tr' }, caseHint(morph, task.noun.en, task.col, k))))),
-        h('div', { class: 'helper-row' }, ['oʻ', 'gʻ', 'ʼ'].map((s) =>
-          h('button', { class: 'chip-btn', type: 'button', onClick: () => { focused.value += s; focused.focus(); } }, s))),
+        hyKeyboard(ins),
         fb, btn),
       h('p', { class: 'tiny muted' }, t('tableHint'))));
     setTimeout(() => ins[0].focus(), 50);

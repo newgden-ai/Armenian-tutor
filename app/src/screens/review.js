@@ -48,7 +48,7 @@ export async function renderReview(app, { unit } = {}) {
       h('ol', { class: 'q-opts', type: 'A' }, mixOrder(q.id, q.options.ru.length).map((k) =>
         h('li', { class: k === 0 ? 'ok' : '' }, q.options.ru[k], k === 0 ? ' ✓' : ''))),
       h('div', { class: 'quote small' }, icon('learn'), h('span', {}, `«${q.quote_ru}»`)),
-      h('details', {}, h('summary', { class: 'small muted' }, 'UZ / EN'),
+      h('details', {}, h('summary', { class: 'small muted' }, 'HY / EN'),
         h('p', { class: 'small' }, h('b', {}, q.prompt_uz), h('br'), mixOrder(q.id, q.options.uz.length).map((k) => q.options.uz[k]).join(' · ')),
         h('p', { class: 'small' }, h('b', {}, q.prompt_en), h('br'), mixOrder(q.id, q.options.en.length).map((k) => q.options.en[k]).join(' · '))),
       h('div', { class: 'review-btns' },

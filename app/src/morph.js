@@ -4,32 +4,33 @@ import { rpc, notifyFlags } from './api.js';
 import { t } from './i18n.js';
 import { h, sheet, haptic } from './ui.js';
 import { icon } from './icons.js';
-import { acceptedForms } from './uzmorph.js';
+import { acceptedForms } from './hymorph.js';
 import { keyUz } from './normalize.js';
 
-// Тема грамматики (№ в курсе), после которой открывается время. 8 — отрицательная форма.
+// Тема грамматики (№ в армянском курсе), после которой открывается время. 14 — отрицание (չ-, մի).
 export const TENSE_TOPIC = {
-  pres_fut: 3, past_def: 5, past_indef: 6, pres_cont: 7, pres_moqda: 7, imper: 16, fut_pres: 21, fut_intent: 22,
-  cond: 23, wish: 24, unreal: 24, past_cont: 25, past_perf: 25, past_habit: 25, can: 26, past_narr: 27,
+  pres: 10, can: 10, imperf: 11, aorist: 12, perfect: 13, pluperf: 13, fut: 13, fut_past: 13,
+  imper: 15, subj: 15, subj_past: 15, cond: 15, cond_past: 15,
 };
-export const NEG_TOPIC = 8;
-// Склонение: падежи — тема 9, множественное число — 11, притяжательные формы — 10
-export const DECL_TOPIC = { sg: 9, pl: 11, poss: 10 };
+export const NEG_TOPIC = 14;
+// Склонение: падежи — тема 4, множественное число — 3, артикли и притяжательные формы — 5
+export const DECL_TOPIC = { sg: 4, pl: 3, poss: 5 };
 
 export function openTenses(state) {
   const passed = new Set((state && state.grammar) || []);
   const open = Object.keys(TENSE_TOPIC).filter((id) => passed.has(TENSE_TOPIC[id]));
-  return { tenses: open.length ? open : ['pres_fut'], neg: passed.has(NEG_TOPIC), passed, none: !open.length };
+  return { tenses: open.length ? open : ['pres'], neg: passed.has(NEG_TOPIC), passed, none: !open.length };
 }
 export function openColumns(state) {
   const passed = new Set((state && state.grammar) || []);
   const cols = ['sg'];
+  if (passed.has(DECL_TOPIC.poss)) cols.push('def');
   if (passed.has(DECL_TOPIC.pl)) cols.push('pl');
-  if (passed.has(DECL_TOPIC.poss)) cols.push('poss0', 'poss1', 'poss2', 'poss3', 'poss4', 'poss5');
+  if (passed.has(DECL_TOPIC.poss)) cols.push('poss0', 'poss1');
   return { cols, none: !passed.has(DECL_TOPIC.sg) };
 }
 
-// Общий корень всех форм таблицы (и основы): bor | oʻqi | yura (yurak → yuragim)
+// Общий корень всех форм таблицы (и основы): գր (գրում եմ, գրեցի …), գ (գիրք → գրքի)
 export function commonRoot(forms, base) {
   const all = [base, ...forms.flatMap((f) => acceptedForms(f))].filter((x) => x != null);
   let root = all[0] || '';
@@ -38,15 +39,15 @@ export function commonRoot(forms, base) {
     while (i < root.length && i < f.length && root[i] === f[i]) i++;
     root = root.slice(0, i);
   }
-  // не обрываем oʻ / gʻ посередине
-  if (/[og]$/i.test(root) && all.some((f) => f.slice(root.length, root.length + 1) === 'ʻ')) root = root.slice(0, -1);
+  // не обрываем «ու» посередине
+  if (/ո$/.test(root) && all.some((f) => f.slice(root.length, root.length + 1) === 'ւ')) root = root.slice(0, -1);
   return root;
 }
 
 // Ответ в клетке: можно написать только окончание (после корня) или всю форму
 export function cellOk(answer, cell, root, extra = []) {
-  // «men boraman» — тоже верно: личное местоимение перед формой не мешает
-  const a = keyUz(answer || '').replace(/^(men|sen|u|biz|siz|ular|mening|sening|uning|bizning|sizning|ularning) (?=\S)/, '');
+  // «ես գրում եմ» — тоже верно: личное (или притяжательное) местоимение перед формой не мешает
+  const a = keyUz(answer || '').replace(/^(ես|դու|նա|մենք|դուք|նրանք|իմ|քո|նրա|մեր|ձեր|նրանց) (?=\S)/, '');
   const variants = [...acceptedForms(cell), ...extra.flatMap((x) => (x ? acceptedForms(x) : []))];
   return variants.some((v) => {
     const k = keyUz(v);

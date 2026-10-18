@@ -40,8 +40,16 @@ function backspace(input) {
   input.dispatchEvent(new Event('input', { bubbles: true }));
 }
 
-// Возвращает элемент: строка с переключателем и (если включена) клавиатура под полем ввода
+// Возвращает элемент: строка с переключателем и (если включена) клавиатура под полем ввода.
+// input — поле ввода или массив полей (таблица): буквы вводятся в то поле, где сейчас курсор.
 export function hyKeyboard(input, { onEnter } = {}) {
+  const fields = Array.isArray(input) ? input.filter(Boolean) : [input];
+  let current = fields[0];
+  for (const f of fields) f.addEventListener('focus', () => { current = f; });
+  input = new Proxy({}, {
+    get: (_, k) => { const v = current[k]; return typeof v === 'function' ? v.bind(current) : v; },
+    set: (_, k, v) => { current[k] = v; return true; },
+  });
   let on = prefOn();
   const key = (label, fn, cls = '') => h('button', {
     class: `hk-key ${cls}`, type: 'button', tabindex: '-1',
@@ -57,7 +65,7 @@ export function hyKeyboard(input, { onEnter } = {}) {
   const toggle = h('button', { class: 'chip-btn hk-toggle', type: 'button' });
   const apply = () => {
     grid.hidden = !on;
-    input.setAttribute('inputmode', on ? 'none' : 'text');
+    for (const f of fields) f.setAttribute('inputmode', on ? 'none' : 'text');
     toggle.textContent = on ? `⌨ ${t('kbSystem')}` : `⌨ ${t('kbArmenian')}`;
   };
   toggle.addEventListener('click', () => { on = !on; savePref(on); apply(); input.blur(); setTimeout(() => input.focus(), 30); });

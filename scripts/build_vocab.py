@@ -384,6 +384,18 @@ def read_pos():
         return {int(r["id"]): r["pos"].strip() for r in csv.DictReader(f) if r.get("id")}
 
 
+def write_nouns_js(pos_map):
+    """app/src/nouns.js: id существительных из data/pos.csv — по ним приложение показывает кнопку «Склонение»."""
+    ids = sorted(i for i, p in pos_map.items() if p == "n")
+    body = ",".join(str(i) for i in ids)
+    text = ("// Создаётся scripts/build_vocab.py из data/pos.csv — вручную не править.\n"
+            "// id существительных, для которых приложение показывает таблицу склонения.\n"
+            f"export const NOUN_IDS = new Set([{body}]);\n")
+    path = ROOT / "app" / "src" / "nouns.js"
+    if not path.exists() or path.read_text(encoding="utf-8") != text:
+        path.write_text(text, encoding="utf-8")
+
+
 def read_verb_forms():
     """data/verb_forms.csv: переводы форм глаголов (ru: инфинитив, хвост, наст., прош., повел.; en: 5 форм, хвост)."""
     path = ROOT / "data" / "verb_forms.csv"
@@ -432,6 +444,7 @@ def csv_array(items) -> str:
 def main():
     data = read_source()
     pos_map = read_pos()
+    write_nouns_js(pos_map)
     verb_forms = read_verb_forms()
     noun_forms = read_noun_forms()
     data, uz_changed = apply_word_fixes(data)
