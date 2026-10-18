@@ -54,7 +54,7 @@ jobs:
 
       - name: Озвучка
         run: |
-          python3 scripts/tts.py --out out/audio --engine "${{ inputs.engine }}" --voice "${{ inputs.voice }}" --limit "${{ inputs.limit }}" | tee tts.log
+          python3 -u scripts/tts.py --out out/audio --engine "${{ inputs.engine }}" --voice "${{ inputs.voice }}" --limit "${{ inputs.limit }}" | tee tts.log
           echo "## Озвучка" >> "$GITHUB_STEP_SUMMARY"
           tail -n 3 tts.log >> "$GITHUB_STEP_SUMMARY"
           echo "Файлов: $(ls out/audio | wc -l)" >> "$GITHUB_STEP_SUMMARY"
