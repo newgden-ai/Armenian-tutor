@@ -1,7 +1,9 @@
 # Озвучка слов и примеров без аудио (армянская версия: сначала весь словарь — несколько запусков, потом новые и исправленные).
 # Запуск вручную: Actions → «Озвучка» → Run workflow.
 #   1. собирает словарь и находит слова/примеры без аудио (scripts/tts.py);
-#   2. озвучивает их бесплатным голосом Microsoft (hy-AM-Anahit / hy-AM-Hayk), запасной вариант — Google;
+#   2. озвучивает их: espeak — eSpeak NG (бесплатно, без регистрации, «роботский» голос; можно в платном приложении);
+#      mms — Meta MMS-TTS (бесплатно, без регистрации, голос естественнее, но лицензия только некоммерческая);
+#      azure — Microsoft Azure (лучший голос; нужен аккаунт Azure и секреты AZURE_TTS_KEY, AZURE_TTS_REGION);
 #   3. если задан секрет AUDIO_REPO_TOKEN — кладёт файлы в репозиторий с аудио (переменная AUDIO_REPO, папка audio/) и
 #      отмечает их в data/audio_voiced.txt, после чего запускает «Import Vocab» — в приложении появляются кнопки звука;
 #      без секрета — файлы можно скачать архивом (Artifacts) и загрузить в репозиторий с аудио вручную.
@@ -11,12 +13,12 @@ on:
   workflow_dispatch:
     inputs:
       engine:
-        description: 'Голос: edge — Microsoft (рекомендуется), gtts — Google'
-        default: edge
+        description: 'Сервис: espeak — бесплатно (робот); mms — бесплатно, естественнее (лицензия некоммерческая); azure — нужен ключ'
+        default: espeak
         type: choice
-        options: [edge, gtts]
+        options: [espeak, mms, azure]
       voice:
-        description: 'Голос Microsoft (только для edge)'
+        description: 'Голос Microsoft (только для azure)'
         default: hy-AM-AnahitNeural
         type: choice
         options: [hy-AM-AnahitNeural, hy-AM-HaykNeural]
@@ -35,10 +37,12 @@ concurrency:
 jobs:
   tts:
     runs-on: ubuntu-latest
-    timeout-minutes: 120
+    timeout-minutes: 340
     env:
       AUDIO_REPO_TOKEN: ${{ secrets.AUDIO_REPO_TOKEN }}
       AUDIO_REPO: ${{ vars.AUDIO_REPO }}            # например: <логин>/armenian-audio
+      AZURE_TTS_KEY: ${{ secrets.AZURE_TTS_KEY }}
+      AZURE_TTS_REGION: ${{ vars.AZURE_TTS_REGION }}  # например: westeurope
     steps:
       - uses: actions/checkout@v4
 
@@ -47,7 +51,14 @@ jobs:
           python-version: '3.12'
 
       - name: Зависимости
-        run: pip install openpyxl gTTS edge-tts
+        run: |
+          pip install openpyxl
+          case "${{ inputs.engine }}" in
+            espeak) sudo apt-get update -q && sudo apt-get install -y -q espeak-ng ffmpeg ;;
+            mms) sudo apt-get update -q && sudo apt-get install -y -q ffmpeg
+                 pip install torch --index-url https://download.pytorch.org/whl/cpu
+                 pip install transformers uroman numpy ;;
+          esac
 
       - name: Сборка словаря
         run: python3 scripts/build_vocab.py
