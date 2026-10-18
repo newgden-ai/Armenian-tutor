@@ -2,7 +2,7 @@
 # Запуск вручную: Actions → «Озвучка» → Run workflow.
 #   1. собирает словарь и находит слова/примеры без аудио (scripts/tts.py);
 #   2. озвучивает их: espeak — eSpeak NG (бесплатно, без регистрации, «роботский» голос; можно в платном приложении);
-#      mms — Meta MMS-TTS (бесплатно, без регистрации, голос естественнее, но лицензия только некоммерческая);
+#      t5 — модель SpeechT5 для восточноармянского (бесплатно, без регистрации, голос естественнее, лицензия Apache-2.0);
 #      azure — Microsoft Azure (лучший голос; нужен аккаунт Azure и секреты AZURE_TTS_KEY, AZURE_TTS_REGION);
 #   3. если задан секрет AUDIO_REPO_TOKEN — кладёт файлы в репозиторий с аудио (переменная AUDIO_REPO, папка audio/) и
 #      отмечает их в data/audio_voiced.txt, после чего запускает «Import Vocab» — в приложении появляются кнопки звука;
@@ -13,10 +13,10 @@ on:
   workflow_dispatch:
     inputs:
       engine:
-        description: 'Сервис: espeak — бесплатно (робот); mms — бесплатно, естественнее (лицензия некоммерческая); azure — нужен ключ'
-        default: espeak
+        description: 'Сервис: t5 — бесплатно, естественный голос; espeak — бесплатно, «робот»; azure — нужен ключ Azure'
+        default: t5
         type: choice
-        options: [espeak, mms, azure]
+        options: [t5, espeak, azure]
       voice:
         description: 'Голос Microsoft (только для azure)'
         default: hy-AM-AnahitNeural
@@ -55,9 +55,9 @@ jobs:
           pip install openpyxl
           case "${{ inputs.engine }}" in
             espeak) sudo apt-get update -q && sudo apt-get install -y -q espeak-ng ffmpeg ;;
-            mms) sudo apt-get update -q && sudo apt-get install -y -q ffmpeg
-                 pip install torch --index-url https://download.pytorch.org/whl/cpu
-                 pip install transformers uroman numpy ;;
+            t5) sudo apt-get update -q && sudo apt-get install -y -q ffmpeg
+                pip install torch --index-url https://download.pytorch.org/whl/cpu
+                pip install transformers sentencepiece huggingface_hub numpy ;;
           esac
 
       - name: Сборка словаря

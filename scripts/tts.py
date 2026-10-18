@@ -10,14 +10,15 @@
 Сервисы (--engine):
   espeak — eSpeak NG, голос hy: полностью бесплатно, без регистрации, работает прямо в GitHub Actions; звучит
            «по-роботски», зато разрешено и в платном приложении (по умолчанию);
-  mms    — модель Meta MMS-TTS (facebook/mms-tts-hye): бесплатно, без регистрации, работает в GitHub Actions,
-           звучит естественнее, НО лицензия CC-BY-NC 4.0 запрещает коммерческое использование;
+  t5     — модель восточноармянского языка ArthurYeghinyan/armenian-speecht5-sota (SpeechT5 + HiFi-GAN, лицензия
+           Apache-2.0 — можно и в платном приложении): бесплатно, без регистрации, работает в GitHub Actions,
+           звучит естественнее eSpeak. (У Meta MMS-TTS есть только западноармянская модель hyw — не подходит.)
   azure  — Microsoft Azure Speech (hy-AM-AnahitNeural / HaykNeural): лучший голос, бесплатный тариф F0
            (500 000 символов в месяц), но нужен аккаунт Azure и секреты AZURE_TTS_KEY, AZURE_TTS_REGION.
 Бесплатный голос браузера Edge (edge-tts) и Google gTTS армянского не знают.
 Имена файлов — как в приложении: word_<id>.mp3 и word_<id>_ex<n>.mp3.
 
-Запуск: python3 scripts/tts.py --out out/audio [--engine espeak|mms|azure|edge|gtts] [--voice hy-AM-AnahitNeural] [--limit 3000]
+Запуск: python3 scripts/tts.py --out out/audio [--engine espeak|t5|azure|edge|gtts] [--voice hy-AM-AnahitNeural] [--limit 3000]
 Готовые имена дописываются в data/audio_voiced.txt — повторный запуск продолжает с того места, где остановился.
 """
 import argparse
@@ -94,32 +95,35 @@ def say_espeak(text: str, path: Path):
         to_mp3(wav, path)
 
 
-_MMS = {}
+_T5 = {}
+T5_MODEL = "ArthurYeghinyan/armenian-speecht5-sota"
 
 
-def say_mms(text: str, path: Path):
+def say_t5(text: str, path: Path):
     import numpy as np
     import torch
-    if not _MMS:
-        from transformers import AutoTokenizer, VitsModel
-        _MMS["tok"] = AutoTokenizer.from_pretrained("facebook/mms-tts-hye")
-        _MMS["model"] = VitsModel.from_pretrained("facebook/mms-tts-hye")
-        if getattr(_MMS["tok"], "is_uroman", False):
-            import uroman as ur
-            _MMS["uroman"] = ur.Uroman()
+    if not _T5:
+        from huggingface_hub import hf_hub_download
+        from transformers import SpeechT5ForTextToSpeech, SpeechT5HifiGan, SpeechT5Processor
+        torch.set_num_threads(os.cpu_count() or 2)
+        _T5["proc"] = SpeechT5Processor.from_pretrained(T5_MODEL)
+        _T5["model"] = SpeechT5ForTextToSpeech.from_pretrained(T5_MODEL).eval()
+        _T5["voc"] = SpeechT5HifiGan.from_pretrained("microsoft/speecht5_hifigan").eval()
+        spk = torch.load(hf_hub_download(T5_MODEL, "golden_speaker_embedding.pt"), map_location="cpu")
+        _T5["spk"] = spk.unsqueeze(0) if spk.dim() == 1 else spk
     t = speakable(text)
-    if "uroman" in _MMS:
-        t = _MMS["uroman"].romanize_string(t)
-    inputs = _MMS["tok"](t, return_tensors="pt")
+    if not t.endswith(("։", ".", "՞", "?", "!", "՜")):
+        t += "։"                                  # с точкой в конце модель не «тянет» последнее слово
+    inputs = _T5["proc"](text=t, return_tensors="pt")
     with torch.no_grad():
-        audio = _MMS["model"](**inputs).waveform[0].numpy()
+        audio = _T5["model"].generate_speech(inputs["input_ids"], _T5["spk"], vocoder=_T5["voc"]).numpy()
     pcm = (np.clip(audio, -1, 1) * 32767).astype("<i2").tobytes()
     with tempfile.TemporaryDirectory() as d:
         wav = Path(d) / "a.wav"
         with wave.open(str(wav), "wb") as w:
             w.setnchannels(1)
             w.setsampwidth(2)
-            w.setframerate(_MMS["model"].config.sampling_rate)
+            w.setframerate(16000)
             w.writeframes(pcm)
         to_mp3(wav, path)
 
@@ -156,7 +160,7 @@ def say_azure(text: str, path: Path, voice: str):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--out", default="out/audio")
-    ap.add_argument("--engine", default="espeak", choices=["espeak", "mms", "azure", "edge", "gtts"])
+    ap.add_argument("--engine", default="espeak", choices=["espeak", "t5", "azure", "edge", "gtts"])
     ap.add_argument("--voice", default="hy-AM-AnahitNeural")
     ap.add_argument("--limit", type=int, default=3000, help="не больше стольких файлов за запуск (защита от лимитов сервиса)")
     a = ap.parse_args()
@@ -184,8 +188,8 @@ def main():
                     say_edge(text, path, a.voice)
                 elif engine == "espeak":
                     say_espeak(text, path)
-                elif engine == "mms":
-                    say_mms(text, path)
+                elif engine == "t5":
+                    say_t5(text, path)
                 else:
                     say_azure(text, path, a.voice)
                 if path.stat().st_size < 500:
@@ -218,7 +222,7 @@ def main():
     with open(VOICED, "a", encoding="utf-8") as f:
         f.write("".join(n + "\n" for n in done))
     left = len(items) - min(len(items), a.limit) + len(failed)
-    label = {"gtts": "Google (gTTS)", "espeak": "eSpeak NG (hy)", "mms": "Meta MMS-TTS (hye)"}.get(engine, "Microsoft " + a.voice)
+    label = {"gtts": "Google (gTTS)", "espeak": "eSpeak NG (hy)", "t5": "SpeechT5 (восточноармянский)"}.get(engine, "Microsoft " + a.voice)
     print(f"Готово. Голос: {label}. Ошибок: {len(failed)}. Осталось: {left}")
     if failed:
         print("Не получилось:", ", ".join(failed[:30]))
