@@ -84,8 +84,9 @@ def say_edge(text: str, path: Path, voice: str):
 
 
 def to_mp3(wav: Path, path: Path):
-    subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", str(wav), "-ac", "1", "-codec:a", "libmp3lame",
-                    "-b:a", "48k", str(path)], check=True)
+    # громкость выравниваем (loudnorm): у моделей голос получается тихим, а у разных слов — разной громкости
+    subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", str(wav), "-af", "loudnorm=I=-18:TP=-2:LRA=11",
+                    "-ar", "24000", "-ac", "1", "-codec:a", "libmp3lame", "-b:a", "48k", str(path)], check=True)
 
 
 def say_espeak(text: str, path: Path):
