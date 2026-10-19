@@ -1,7 +1,7 @@
 // Точка входа: вход через Telegram, три вкладки (Дом, Путь, Настройки), стек экранов, кнопка «Назад» Telegram.
 import { login, rpc, tg, ApiError } from './api.js';
 import { setLang, t } from './i18n.js';
-import { h, mount, spinner, haptic } from './ui.js';
+import { h, mount, spinner, haptic, onSheetsChange, sheetCount, closeTopSheet, closeAllSheets } from './ui.js';
 import { icon } from './icons.js';
 import { initTheme, applyTheme } from './theme.js';
 import { renderHome } from './screens/home.js';
@@ -43,17 +43,20 @@ export const app = {
     if (this.cleanup) { try { this.cleanup(); } catch (e) { console.warn(e); } this.cleanup = null; }
   },
   go(screen, params = {}) {
+    closeAllSheets();
     this.leave();
     this.stack.push({ screen, params });
     render();
   },
   back() {
+    if (closeTopSheet()) return;           // сначала закрываем открытую шторку
     this.leave();
     if (this.stack.length > 1) this.stack.pop();
     render();
   },
   // заменить текущий экран (без добавления в историю)
   replace(screen, params = {}) {
+    closeAllSheets();
     this.leave();
     this.stack[this.stack.length - 1] = { screen, params };
     render();
@@ -133,17 +136,23 @@ function fallbackBack(webApp) {
     btn = h('button', { id: 'fallback-back', class: 'fallback-back', type: 'button', 'aria-label': t('back'), onClick: () => app.back() }, icon('chevron'));
     document.body.append(btn);
   }
-  btn.hidden = app.stack.length <= 1;
+  btn.hidden = app.stack.length <= 1 && !sheetCount();
 }
 
-function render() {
-  const { screen, params } = app.stack[app.stack.length - 1];
+// Кнопка «Назад» видна, если есть куда вернуться или открыта шторка
+function updateBack() {
   const webApp = tg();
   if (webApp && webApp.BackButton) {
-    if (app.stack.length > 1) webApp.BackButton.show();
+    if (app.stack.length > 1 || sheetCount()) webApp.BackButton.show();
     else webApp.BackButton.hide();
   }
   fallbackBack(webApp);
+}
+onSheetsChange(updateBack);
+
+function render() {
+  const { screen, params } = app.stack[app.stack.length - 1];
+  updateBack();
   updateTabbar();
   Promise.resolve(SCREENS[screen](app, params)).then(updateTabbar).catch(showError);
 }

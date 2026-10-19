@@ -86,10 +86,11 @@ jobs:
           git clone --depth 1 "https://x-access-token:${AUDIO_REPO_TOKEN}@github.com/${AUDIO_REPO}.git" audio-repo
           mkdir -p audio-repo/audio
           cp out/audio/*.mp3 audio-repo/audio/
+          touch audio-repo/.nojekyll              # GitHub Pages публикует файлы как есть, без сборки Jekyll (быстрее)
           cd audio-repo
           git config user.name "armenian-tutor bot"
           git config user.email "actions@users.noreply.github.com"
-          git add audio
+          git add audio .nojekyll
           git commit -m "Озвучка: $(ls ../out/audio | wc -l) файлов" || exit 0
           git push
 

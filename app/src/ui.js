@@ -61,12 +61,37 @@ export function audioButton(onClick, label) {
 }
 
 // Нижняя шторка: закрывается касанием фона. Возвращает функцию закрытия.
+// Открытые шторки (сверху — последняя). Кнопка «Назад» Telegram сначала закрывает шторку, потом экран.
+const openSheets = [];
+let sheetHook = null;
+export function onSheetsChange(fn) { sheetHook = fn; }
+export const sheetCount = () => openSheets.length;
+export function closeTopSheet() {
+  const close = openSheets[openSheets.length - 1];
+  if (!close) return false;
+  close();
+  return true;
+}
+export function closeAllSheets() { while (closeTopSheet()) { /* по одной */ } }
+
 export function sheet(...content) {
   const back = h('div', { class: 'sheet-back' });
-  const close = () => back.remove();
+  let closed = false;
+  const close = () => {
+    if (closed) return;
+    closed = true;
+    back.remove();
+    const i = openSheets.indexOf(close);
+    if (i >= 0) openSheets.splice(i, 1);
+    if (sheetHook) sheetHook();
+  };
   back.addEventListener('click', (e) => { if (e.target === back) close(); });
-  back.append(h('div', { class: 'sheet' }, h('div', { class: 'sheet-grip' }), ...content));
+  back.append(h('div', { class: 'sheet' },
+    h('button', { class: 'sheet-close', type: 'button', 'aria-label': '×', onClick: close }, '×'),
+    h('div', { class: 'sheet-grip' }), ...content));
   document.body.append(back);
+  openSheets.push(close);
+  if (sheetHook) sheetHook();
   return close;
 }
 
