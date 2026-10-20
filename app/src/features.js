@@ -9,5 +9,5 @@ export const FEATURES = {
   MORPH: true,
   GRAMMAR_FORMS: true,
   DIALOGS: true,
-  COLLOQUIAL: false,
+  COLLOQUIAL: true,
 };

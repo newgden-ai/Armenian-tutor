@@ -1480,8 +1480,9 @@ Object.assign(en, {
 
 // ---------------------------------------------------------------- армянская версия: спряжение, склонение, «Как образуется»
 Object.assign(ru, {
+  gfParticiples: 'Причастия и деепричастия (դերբայներ)', gfForm: 'Форма', gfColloq: 'Как пишут и как говорят',
   conjNote: 'Формы построены по правилам восточноармянского литературного языка; ошибку можно отметить флажком ⚑.',
-  conjNote2: 'Формы построены по правилам восточноармянского литературного языка. Перевод — несовершенным видом (в армянском виды не различаются). Ошибку отметьте флажком ⚑.',
+  conjNote2: 'Формы — по правилам восточноармянского литературного языка, «разг.» — ереванские разговорные варианты (գնում ա, կարամ, նայի). Перевод — несовершенным видом (в армянском виды не различаются). Ошибку отметьте флажком ⚑.',
   conjGroup_conditional: 'Желательное и условное', conjGroup_nonfinite: 'Причастия (դերբայներ)',
   conjOpenNone: 'Пока открыто только настоящее время (-ում եմ). Новые времена откроются, когда вы пройдёте темы грамматики о глаголе или сдадите тест уровня.',
   declSub: 'Существительные словаря по уровням: 7 падежей, определённый артикль, множественное число, «мой / твой» (-ս / -դ).',
@@ -1499,8 +1500,9 @@ Object.assign(ru, {
   gfPossNote: 'Артикль -ը после согласного, -ն после гласного (տղան). «Мой» и «твой» — артикли -ս и -դ (գիրքս, գիրքդ); для «его, наш, ваш, их» — местоимение и артикль -ը/-ն. Ниже — падежи с определённым артиклем.',
 });
 Object.assign(en, {
+  gfParticiples: 'Participles and converbs (դերբայներ)', gfForm: 'Form', gfColloq: 'Written vs spoken',
   conjNote: 'Forms follow the rules of Eastern Armenian; mark a mistake with the ⚑ flag.',
-  conjNote2: 'Forms follow the rules of literary Eastern Armenian. Translations are approximate. Mark a mistake with the ⚑ flag.',
+  conjNote2: 'Forms follow literary Eastern Armenian; “coll.” marks everyday Yerevan variants (գնում ա, կարամ, նայի). Translations are approximate. Mark a mistake with the ⚑ flag.',
   conjGroup_conditional: 'Subjunctive & conditional', conjGroup_nonfinite: 'Participles (դերբայներ)',
   conjOpenNone: 'Only the present tense (-ում եմ) is open so far. New tenses open as you complete grammar topics about the verb or pass a level test.',
   declSub: 'Dictionary nouns by level: 7 cases, the definite article, plural and “my / your” (-ս / -դ).',

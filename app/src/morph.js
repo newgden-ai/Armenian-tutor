@@ -9,8 +9,8 @@ import { keyUz } from './normalize.js';
 
 // Тема грамматики (№ в армянском курсе), после которой открывается время. 14 — отрицание (չ-, մի).
 export const TENSE_TOPIC = {
-  pres: 10, can: 10, imperf: 11, aorist: 12, perfect: 13, pluperf: 13, fut: 13, fut_past: 13,
-  imper: 15, subj: 15, subj_past: 15, cond: 15, cond_past: 15,
+  pres: 10, imperf: 11, aorist: 12, perfect: 13, pluperf: 13, imper: 15,
+  fut: 21, fut_past: 21, cond: 21, subj: 22, subj_past: 23, cond_past: 23, can: 24,
 };
 export const NEG_TOPIC = 14;
 // Склонение: падежи — тема 4, множественное число — 3, артикли и притяжательные формы — 5

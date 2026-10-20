@@ -168,6 +168,30 @@ export function conjugate(infinitive) {
       pos: six((i) => `${KAROX[i]} ${v.full}`), neg: six((i) => `${KAROX_NEG[i]} ${v.full}`) },
   ];
 
+  // ---------------------------------------------------------------- разговорные (ереванские) варианты
+  // Только устойчивые и общеупотребительные: «ա» вместо «է» в 3 л. ед. ч. (գնում ա, գնացել ա),
+  // կարամ / չեմ կարա вместо կարող եմ / չեմ կարող, повелительное -ի вместо -իր (նայի, մի նայի),
+  // ասի / ասեց, տվի вместо ասացի / ասաց, տվեցի. Где варианта нет — null.
+  const only3 = (part) => six((i) => (i === 2 ? analytic(prefix, part, 'ա', false) : null));
+  const KARAM = ['կարամ', 'կարաս', 'կարա', 'կարանք', 'կարաք', 'կարան'];
+  const KARAM_NEG = ['չեմ կարա', 'չես կարա', 'չի կարա', 'չենք կարա', 'չեք կարա', 'չեն կարա'];
+  const COLL = {
+    pres: { pos: only3(A.presPart), neg: null },
+    perfect: { pos: only3(A.perfPart), neg: null },
+    fut: { pos: only3(A.futPart), neg: null },
+    can: { pos: six((i) => `${KARAM[i]} ${v.full}`), neg: six((i) => `${KARAM_NEG[i]} ${v.full}`) },
+  };
+  const impPos = tenses.find((x) => x.id === 'imper');
+  if (/իր$/.test(impPos.pos[1])) {
+    COLL.imper = {
+      pos: impPos.pos.map((f, i) => (i === 1 ? f.replace(/իր$/, 'ի') : null)),
+      neg: impPos.neg.map((f, i) => (i === 1 && /իր$/.test(f) ? f.replace(/իր$/, 'ի') : null)),
+    };
+  }
+  const AOR_COLL = { 'ասել': ['ասի', 'ասիր', 'ասեց', 'ասինք', 'ասիք', 'ասին'], 'տալ': ['տվի', 'տվիր', 'տվեց', 'տվինք', 'տվիք', 'տվին'] };
+  if (AOR_COLL[v.inf]) COLL.aorist = { pos: syn(AOR_COLL[v.inf]), neg: syn(AOR_COLL[v.inf].map(neg)) };
+  for (const tn of tenses) if (COLL[tn.id]) tn.coll = COLL[tn.id];
+
   // неличные формы (դերբայներ)
   const p = (f) => joinPre(prefix, f);
   const nonfinite = [

@@ -88,7 +88,7 @@ begin
   -- темы армянского курса: ничего не пройдено — потолок 1; пройдены все темы о глаголе (10–15) — 15
   if (public.morph_state('a1a1a1a1-0000-0000-0000-000000000001')->>'conj_cap')::int <> 1 then raise exception 'FAIL: conj_cap без тем'; end if;
   insert into public.course_progress (user_id, unit_id, read_at)
-    select 'a1a1a1a1-0000-0000-0000-000000000001', id, now() from public.course_units where course_id = 'grammar' and source_no between 3 and 15
+    select 'a1a1a1a1-0000-0000-0000-000000000001', id, now() from public.course_units where course_id = 'grammar' and source_no in (3,4,5,10,11,12,13,14,15,21,22,23,24,25,26)
   on conflict do nothing;
   v := public.morph_state('a1a1a1a1-0000-0000-0000-000000000001');
   if (v->>'conj_cap')::int <> 15 or (v->>'decl_cap')::int <> 15 then raise exception 'FAIL: потолки после тем: %', v; end if;

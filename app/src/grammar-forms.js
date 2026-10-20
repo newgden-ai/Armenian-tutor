@@ -7,9 +7,12 @@ import { conjugate, decline, acceptedForms, PERSONS, CASES, withArticle } from '
 
 // тема грамматики (№ в армянском курсе) → какие таблицы показать
 const TOPIC_TABLES = {
-  10: [['pres', false], ['can', false]], 11: [['imperf', false]], 12: [['aorist', false]],
-  13: [['perfect', false], ['pluperf', false], ['fut', false]], 14: [['pres', true], ['aorist', true], ['perfect', true]],
-  15: [['imper', false], ['imper', true], ['subj', false], ['cond', false]],
+  10: [['pres', false]], 11: [['imperf', false]], 12: [['aorist', false]],
+  13: [['perfect', false], ['pluperf', false]], 14: [['pres', true], ['aorist', true], ['perfect', true]],
+  15: [['imper', false], ['imper', true]],
+  21: [['fut', false], ['cond', false], ['cond', true], ['fut_past', false]], 22: [['subj', false], ['subj', true]],
+  23: [['subj_past', false], ['cond_past', false], ['cond_past', true]], 24: [['can', false], ['can', true]],
+  25: 'participles', 29: 'colloquial',
   3: 'plural', 4: 'cases', 5: 'poss',
 };
 const EX = ['գրել', 'կարդալ'];                                   // спряжение на -ել и на -ալ
@@ -127,6 +130,42 @@ function possTable() {
         ...words.map((w) => h('td', {}, h('div', { class: 'gf-result' }, decline(w).columns.find((c) => c.id === 'def').forms[i]))))))));
 }
 
+// Причастия (դերբայներ) двух глаголов: на -ել и на -ալ
+function participlesTable() {
+  const ex = ['գրել', 'կարդալ'];
+  const cs = ex.map((v) => conjugate(v));
+  const L = getLang();
+  return h('div', { class: 'gf-card' },
+    h('div', { class: 'gf-title' }, t('gfParticiples')),
+    h('table', { class: 'gf-table' },
+      h('thead', {}, h('tr', {}, h('th', {}, t('gfForm')), ...ex.map((v) => h('th', {}, v)))),
+      h('tbody', {}, cs[0].nonfinite.map((n, i) => h('tr', {},
+        h('td', { class: 'gf-p' }, h('b', {}, n.uz), h('div', {}, h('span', { class: 'gf-suf' }, n.aff))),
+        ...cs.map((c) => h('td', {}, h('div', { class: 'gf-result' }, c.nonfinite[i].forms[0]))))))),
+    h('ul', { class: 'small muted' }, cs[0].nonfinite.map((n) => h('li', {}, h('b', {}, n.aff), ' — ', L === 'hy' ? n.uz : n.ru))));
+}
+
+// Литературная и разговорная (ереванская) форма — по таблицам спряжения
+function colloquialTable() {
+  const rows = [];
+  for (const v of ['նայել', 'ասել', 'տալ']) {
+    const c = conjugate(v);
+    for (const tn of c.tenses) {
+      if (!tn.coll || !tn.coll.pos) continue;
+      const i = tn.coll.pos.findIndex(Boolean);            // по одному примеру на время
+      if (i >= 0 && rows.length < 12 && !rows.some((r) => r[1] === tn.coll.pos[i])) rows.push([tn.pos[i], tn.coll.pos[i]]);
+    }
+  }
+  const extra = [['ինչպե՞ս', 'ո՞նց'], ['ինչո՞ւ', 'ինչի՞'], ['այս, այդ, այն', 'էս, էդ, էն'], ['այստեղ', 'էստեղ'], ['վաղը', 'էգուց'],
+    ['երեկ', 'էրեկ'], ['միայն', 'մենակ'], ['ձայն', 'ձեն']];
+  return h('div', { class: 'gf-card' },
+    h('div', { class: 'gf-title' }, t('gfColloq')),
+    h('table', { class: 'gf-table' },
+      h('thead', {}, h('tr', {}, h('th', {}, t('literaryForm')), h('th', {}, t('colloquial')))),
+      h('tbody', {}, [...rows, ...extra].map(([a, b]) => h('tr', {}, h('td', {}, h('div', { class: 'gf-result' }, a)),
+        h('td', {}, h('div', { class: 'gf-result' }, h('span', { class: 'gf-suf' }, b))))))));
+}
+
 // Блок для страницы темы грамматики (или null, если у темы нет таблиц)
 export function grammarFormsBlock(unit) {
   if (!unit || unit.course_id !== 'grammar') return null;
@@ -135,6 +174,8 @@ export function grammarFormsBlock(unit) {
   let tables;
   if (spec === 'cases' || spec === 'plural') tables = [casesTable(spec)];
   else if (spec === 'poss') tables = [possTable()];
+  else if (spec === 'participles') tables = [participlesTable()];
+  else if (spec === 'colloquial') tables = [colloquialTable()];
   else tables = spec.map(([id, neg]) => tenseTable(id, neg));
   return h('div', {}, h('h2', {}, t('gfTitle')), h('p', { class: 'small muted' }, t('gfHint')), tables);
 }

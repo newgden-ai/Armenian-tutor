@@ -11,7 +11,7 @@
   data/fixes.csv               — утверждённые правки примеров (replace / hide / audio_off)
   data/word_fixes.csv          — правки самих слов: uz / ru (исправление) и off (повреждённая запись — слово отключено)
   data/levels.csv              — уровень CEFR по каждому слову (перепроверка 04.10.2026; в источнике уровень стоял по теме)
-  data/source/colloquial.json  — разговорная лексика Ташкента (отдельные темы «Разговорная речь. …», ID с 20001)
+  data/source/colloquial.json  — разговорная лексика Еревана (отдельные темы «Разговорная речь. …», ID с 20001)
 
 Выход (data/build/):
   topics.csv, words.csv, examples.csv — данные для загрузки (scripts/load_vocab.sql)
@@ -43,7 +43,7 @@ COLLOQ_PREFIX = "Разговорная речь. "
 # «Приветствий», остальное — одной темой в начале A2. На пути обе отмечены «разговорная».
 COLLOQ_CORE_FILE = ROOT / "data" / "colloquial_core.txt"
 COLLOQ_CORE_TOPIC = COLLOQ_PREFIX + "Самое нужное"
-COLLOQ_REST_TOPIC = COLLOQ_PREFIX + "Живая речь Ташкента"
+COLLOQ_REST_TOPIC = COLLOQ_PREFIX + "Живая речь Еревана"
 SUPPLEMENT = ROOT / "data" / "source" / "supplement.json"   # недостающие слова (числа 10–19, 30–33…), ID с 21001
 SYN_NOTES = ROOT / "data" / "syn_notes.csv"     # чем слово отличается от синонимов с тем же переводом (шаг 21)
 TOPIC_NAMES = ROOT / "data" / "topic_names.csv"   # переводы названий тем: name_ru,name_uz,name_en
